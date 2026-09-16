@@ -1,8 +1,10 @@
+require('dotenv').config();
 const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const rateLimit = require('express-rate-limit');
+const { ipKeyGenerator } = require('express-rate-limit');
 const sequelize = require('./db');
 const User = require('./models/User');
 const cors = require('cors');
@@ -27,6 +29,11 @@ const loginLimiter = rateLimit({
   message: { message: 'Too many login attempts. Please try again later.' },
   standardHeaders: true,
   legacyHeaders: false,
+  keyGenerator: (req) => {
+    // Email and IP based limiting
+    const email = req.body?.email?.trim().toLowerCase() || 'unknown';
+    return `${email}:${ipKeyGenerator(req.ip)}`;
+  },
 });
 
 app.get('/api/health', (req, res) => {
