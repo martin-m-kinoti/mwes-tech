@@ -1,0 +1,184 @@
+.nav {
+    background-color: #8ec3eb;
+    min-height: 100vh;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}
+
+.nav-components {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    background-color: #8ec3eb;
+    padding: 16px;
+    gap: 6px;
+}
+
+.logo-img {
+    width: 32px;
+    height: 32px;
+}
+
+.c-name {
+    font-weight: 700;
+    font-size: 16px;
+    color: #1f1f1f;
+    margin: 4px 0;
+}
+
+hr {
+    width: 100%;
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.5);
+    margin: 8px 0;
+}
+
+.profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.profile-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1f1f1f;
+}
+
+.search-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 300px;
+    min-height: 36px;
+    padding: 10px 14px;
+    margin: 4px 0;
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    box-sizing: border-box;
+}
+
+.search-icon {
+    flex-shrink: 0;
+    color: #718096;
+}
+
+.search-bar input {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: #1a202c;
+    font-size: 15px;
+    font-family: inherit;
+}
+
+.search-bar input::placeholder {
+    color: #a0aec0;
+}
+
+.search-bar input::-webkit-search-cancel-button {
+    cursor: pointer;
+}
+
+.search-bar button {
+    background: none;
+    border: none;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    color: #718096;
+}
+
+.section-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #1f1f1f;
+    margin: 10px 0 4px;
+    padding-left: 4px;
+}
+
+.pages-section,
+.docs-section {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+}
+
+.nav-row {
+    width: 100%;
+    text-align: left;
+    background-color: #ffffff;
+    border: none;
+    padding: 8px 12px;
+    font-size: 14px;
+    color: #1f1f1f;
+    cursor: pointer;
+    box-sizing: border-box;
+    border-radius: 8px;
+}
+
+.nav-row:hover {
+    background-color: #f2f7fc;
+}
+
+.nav-row.active {
+    background-color: #ffffff;
+    font-weight: 700;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.dashboard-views {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 4px;
+}
+
+.nav-section {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
+}
+
+.session-section {
+    margin-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.5);
+    padding-top: 8px;
+}
+
+.views-group {
+    width: 200px;
+    text-align: left;
+    background-color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    padding: 8px 12px;
+    margin: 10px;
+    font-size: 14px;
+    color: #1f1f1f;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+.views-group:hover {
+    background-color: #f2f7fc;
+}
+
+.views-group.active {
+    font-weight: 700;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.views-group.logout {
+    color: #b23b3b;
+}
