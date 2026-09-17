@@ -1,18 +1,12 @@
-body {
-  background-color: #8ec3eb;
+.form-section {
+  width: 100%;
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
-  font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
-}
-
-.form-section {
-  width: 100%;
-  max-width: 500px;
-  display: flex;
-  justify-content: center;
+  box-sizing: border-box;
+  background-color: #8ec3eb;
 }
 
 .form-component {
@@ -267,7 +261,7 @@ select {
 }
 
 @media (max-width: 600px) {
-  body {
+  .form-section {
     padding: 15px;
   }
 

@@ -1,0 +1,55 @@
+:root {
+  /* meesTech palette (from dashboard wireframes) */
+  --navy: #1a2f4b;
+  --navy-deep: #122238;
+  --accent: #3a6ea5;
+  --accent-deep: #2c5e8f;
+  --accent-bright: #5a8fc0;
+  --blue-pale: #e9f1f9;
+  --blue-light: #9dc3e8;
+  --blue-fill: #e6eef7;
+  --blue-border: #cbdff0;
+  --surface: #ffffff;
+  --content-bg: #f4f7fb;
+  --border: #e2e8f0;
+  --teal: #2f9e8f;
+  --orange: #e8922f;
+  --gold: #d9a441;
+  --red: #d64545;
+  --red-soft: #fdecec;
+  --green: #3aa76d;
+  --green-soft: #e8f6ee;
+
+  /* legacy auth-page aliases */
+  --coral: #3a6ea5;
+  --coral-deep: #2c5e8f;
+  --blue-deep: #2c5e8f;
+  --card: #ffffff;
+
+  /* typography */
+  --text: #1a202c;
+  --text-soft: #6b7a8d;
+  --font: 'Segoe UI', system-ui, -apple-system, Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+  /* misc */
+  --radius: 10px;
+  --radius-sm: 8px;
+  --shadow: 0 1px 3px rgba(16, 35, 60, 0.08), 0 8px 24px rgba(16, 35, 60, 0.06);
+  --sidebar-width: 240px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  background: var(--blue-pale);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font-family: inherit;
+}

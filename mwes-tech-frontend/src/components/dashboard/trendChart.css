@@ -1,0 +1,13 @@
+.trend-chart {
+  width: 100%;
+  height: 240px;
+}
+
+.trend-chart svg {
+  display: block;
+}
+
+.trend-axis-label {
+  font-size: 11px;
+  fill: #8b9aad;
+}

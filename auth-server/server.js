@@ -8,6 +8,9 @@ const { ipKeyGenerator } = require('express-rate-limit');
 const sequelize = require('./db');
 const User = require('./models/User');
 const cors = require('cors');
+require('./mongo');
+const seedChatData = require('./seedChat');
+const chatRoutes = require('./routes/chat');
 
 const port = 5000;
 const app = express();
@@ -21,6 +24,12 @@ sequelize
   .then(() => console.log('Connected to the database'))
   .catch((err) => console.error('Database connection error:', err)
 );
+
+setTimeout(() => {
+  seedChatData().catch((err) =>
+    console.error('Chat seeding error:', err)
+  );
+}, 1500);
 
 // Login rate limiting
 const loginLimiter = rateLimit({
@@ -40,6 +49,45 @@ app.get('/api/health', (req, res) => {
   res.status(200).json({
     message: 'Successfully connected to the server',
   });
+});
+
+app.use('/api/chat', chatRoutes);
+
+// Admin: list users
+app.get('/api/admin/users', async (req, res) => {
+  try {
+    const users = await User.findAll({
+      order: [['createdAt', 'DESC']],
+      attributes: [
+        'id',
+        'firstName',
+        'lastName',
+        'email',
+        'service',
+        'createdAt',
+        'updatedAt',
+      ],
+    });
+    return res.status(200).json({ users });
+  } catch (err) {
+    console.error('List users error:', err);
+    return res.status(500).json({ message: 'Could not load users.' });
+  }
+});
+
+// Admin: delete a user
+app.delete('/api/admin/users/:id', async (req, res) => {
+  try {
+    const user = await User.findByPk(req.params.id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+    await user.destroy();
+    return res.status(200).json({ message: 'User deleted successfully.' });
+  } catch (err) {
+    console.error('Delete user error:', err);
+    return res.status(500).json({ message: 'Could not delete user.' });
+  }
 });
 
 app.post('/api/auth/register', async (req, res) => {

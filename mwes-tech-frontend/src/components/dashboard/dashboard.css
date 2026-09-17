@@ -1,35 +1,24 @@
-.dashboard {
-    display: flex;
-    min-height: 100vh;
-    width: 100%;
-    background-color: #f5f8fb;
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+  background: var(--content-bg);
 }
 
-.dashboard-sidebar {
-    display: flex;
-    align-items: left;
+.app-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
 }
 
-.dashboard-content {
-    flex: 1;
-    padding: 30px;
-    min-width: 0;
+.app-content {
+  flex: 1;
+  padding: 28px;
+  min-width: 0;
 }
 
-.dashboard-content h1 {
-    display: flex;
-
-    margin: 0;
-    color: #1a202c;
+@media (max-width: 640px) {
+  .app-content {
+    padding: 18px 16px;
+  }
 }
-
-/* Overview */
-.clients-stats-card, .services-stats-card {
-    width: 300px;
-    height: 150px;
-    background-color: #8ec3eb;
-    border-radius: 10px;
-    margin: 10px;
-    padding: 0px 5px;
-}
-

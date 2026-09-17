@@ -1,0 +1,155 @@
+.overview {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+}
+
+.overview-grid {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 26px;
+  align-items: start;
+}
+
+.overview-left {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+}
+
+.overview-right {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.section-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--navy);
+}
+
+.section-title.accent-orange {
+  color: var(--orange);
+}
+
+.stats-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.stat-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.stat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  background: var(--blue-fill);
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.stat-info {
+  min-width: 0;
+}
+
+.stat-value {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.1;
+}
+
+.stat-label {
+  margin: 1px 0 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-soft);
+}
+
+.stat-delta {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: var(--green);
+}
+
+.ratings-card .ratings-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 0 2px;
+}
+
+.ratings-stars {
+  display: flex;
+  gap: 6px;
+}
+
+.ratings-stars .star {
+  color: #d7e0ea;
+}
+
+.ratings-stars .star.filled {
+  color: var(--gold);
+}
+
+.ratings-score {
+  margin: 4px 0 0;
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--gold);
+}
+
+.ratings-note {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--text-soft);
+}
+
+.overview-full {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.service-chip {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--blue-fill);
+  color: var(--accent-deep);
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+@media (max-width: 1100px) {
+  .overview-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .overview-left {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 26px;
+  }
+}
+
+@media (max-width: 720px) {
+  .overview-left {
+    grid-template-columns: 1fr;
+  }
+}

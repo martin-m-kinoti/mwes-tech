@@ -72,7 +72,7 @@ function SignUp() {
             return;
         }
         navigate('/signin');
-        } catch(err) {
+        } catch {
         setErrors('Something went wrong. Please check your connection and try again');
         }
     };

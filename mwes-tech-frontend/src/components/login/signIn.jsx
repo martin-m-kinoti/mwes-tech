@@ -44,7 +44,7 @@ function SignIn() {
         }
         navigate('/dashboard')
         
-        } catch(err) {
+        } catch {
         setErrors('Something went wrong. Please check your connection and try again');
         }
   };

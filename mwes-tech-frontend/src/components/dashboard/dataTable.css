@@ -1,0 +1,113 @@
+.dt-wrap {
+  overflow-x: auto;
+  background: var(--surface);
+  border: 1px solid var(--blue-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.dt-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 640px;
+}
+
+.dt-th {
+  text-align: left;
+  padding: 13px 18px;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+  border-bottom: 1px solid var(--blue-border);
+  background: var(--blue-fill);
+  white-space: nowrap;
+}
+
+.dt-th.accent-teal {
+  color: var(--teal);
+}
+
+.dt-th.accent-orange {
+  color: var(--orange);
+}
+
+.dt-th.accent-red {
+  color: var(--red);
+}
+
+.dt-cell {
+  padding: 13px 18px;
+  font-size: 14px;
+  color: var(--text);
+  border-bottom: 1px solid #edf2f8;
+}
+
+.dt-table tbody tr:last-child .dt-cell {
+  border-bottom: none;
+}
+
+.dt-table tbody tr:hover {
+  background: #f8fbfe;
+}
+
+.dt-cell-action {
+  text-align: right;
+}
+
+.dt-delete {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--red-soft);
+  color: var(--red);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+
+.dt-delete:hover {
+  background: var(--red);
+  color: #ffffff;
+}
+
+.dt-progress {
+  width: 120px;
+  height: 7px;
+  border-radius: 4px;
+  background: #e3ebf5;
+  overflow: hidden;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.dt-progress-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-bright));
+  transition: width 0.3s ease;
+}
+
+.dt-progress-label {
+  margin-left: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-soft);
+  vertical-align: middle;
+}
+
+.dt-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 180px;
+  background: var(--surface);
+  border: 1px dashed var(--blue-border);
+  border-radius: var(--radius);
+  color: var(--text-soft);
+  font-size: 14px;
+}
