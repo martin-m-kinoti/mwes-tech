@@ -1,10 +1,10 @@
 import React from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-import Sidebar from "./navPanel";
+import Sidebar from "./sidebar";
 import TopBar from "./topBar";
-import "./dashboard.css";
+import "./userDashboard.css";
 
-function Dashboard() {
+function UserDashboard() {
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -12,11 +12,11 @@ function Dashboard() {
   };
 
   return (
-    <div className="app-shell">
+    <div className="user-shell">
       <Sidebar onLogout={handleLogout} />
-      <div className="app-main">
+      <div className="user-main">
         <TopBar />
-        <main className="app-content">
+        <main className="user-content">
           <Outlet />
         </main>
       </div>
@@ -24,4 +24,4 @@ function Dashboard() {
   );
 }
 
-export default Dashboard;
+export default UserDashboard;

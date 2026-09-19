@@ -9,7 +9,6 @@ const sequelize = require('./db');
 const User = require('./models/User');
 const cors = require('cors');
 require('./mongo');
-const seedChatData = require('./seedChat');
 const chatRoutes = require('./routes/chat');
 
 const port = 5000;
@@ -24,12 +23,6 @@ sequelize
   .then(() => console.log('Connected to the database'))
   .catch((err) => console.error('Database connection error:', err)
 );
-
-setTimeout(() => {
-  seedChatData().catch((err) =>
-    console.error('Chat seeding error:', err)
-  );
-}, 1500);
 
 // Login rate limiting
 const loginLimiter = rateLimit({

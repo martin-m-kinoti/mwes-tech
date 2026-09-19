@@ -4,10 +4,10 @@ import { Search, Bell } from "lucide-react";
 import "./topBar.css";
 
 const PLACEHOLDERS = [
-  { match: "/dashboard", placeholder: "Search...", exact: true },
-  { match: "/dashboard/users", placeholder: "Search user using username/email..." },
-  { match: "/dashboard/services", placeholder: "Search by service (e.g. Cyber Security)..." },
-  { match: "/dashboard/chat", placeholder: "Search by user..." },
+  { match: "/admin", placeholder: "Search...", exact: true },
+  { match: "/admin/users", placeholder: "Search user using username/email..." },
+  { match: "/admin/services", placeholder: "Search by service (e.g. Cyber Security)..." },
+  { match: "/admin/chat", placeholder: "Search by user..." },
 ];
 
 function TopBar({ userName = "John Admin" }) {

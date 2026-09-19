@@ -1,0 +1,147 @@
+.u-sidebar {
+  width: var(--sidebar-width);
+  flex-shrink: 0;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 22px 16px 16px;
+  background: var(--steel);
+  overflow-y: auto;
+}
+
+.u-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 2px 6px;
+}
+
+.u-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  object-fit: cover;
+  background: var(--periwinkle);
+  flex-shrink: 0;
+}
+
+.u-brand-name {
+  font-size: 18px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+}
+
+.u-sidebar-divider {
+  height: 1px;
+  margin: 16px 8px;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.u-nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.u-nav-label {
+  margin: 0 0 8px;
+  padding-left: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.u-nav-item,
+.u-logout {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 5px 6px;
+  border: none;
+  background: none;
+  border-radius: 10px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.u-nav-item:hover,
+.u-logout:hover {
+  background: rgba(57, 122, 176, 0.35);
+}
+
+.u-nav-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: var(--icon-blue);
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.u-nav-pill {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: var(--cream);
+  color: var(--steel-deep);
+  font-size: 13.5px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.u-nav-item.active .u-nav-pill {
+  background: var(--periwinkle);
+  color: var(--steel);
+  box-shadow: 0 2px 8px rgba(30, 52, 84, 0.25);
+}
+
+.u-nav-item.active .u-nav-icon {
+  background: #8fb9f7;
+}
+
+.u-sidebar-footer {
+  margin-top: 14px;
+  padding-top: 6px;
+}
+
+@media (max-width: 860px) {
+  .u-sidebar {
+    width: 74px;
+    padding: 20px 10px 14px;
+  }
+
+  .u-brand-name,
+  .u-nav-label,
+  .u-nav-pill {
+    display: none;
+  }
+
+  .u-brand {
+    justify-content: center;
+    padding: 0;
+  }
+
+  .u-nav-item,
+  .u-logout {
+    justify-content: center;
+    padding: 5px;
+  }
+
+  .u-nav-icon {
+    width: 36px;
+    height: 36px;
+  }
+}

@@ -5,58 +5,6 @@ import "./chat.css";
 const ME = { id: "admin", name: "You" };
 const API = "http://localhost:5000/api/chat";
 
-const FALLBACK_CONVERSATIONS = [
-  {
-    _id: "client:user1",
-    lastMessage: "Great, will do. Thanks!",
-    lastMessageAt: "2026-09-17T09:00:00.000Z",
-    unread: 1,
-    totalMessages: 3,
-  },
-  {
-    _id: "client:user2",
-    lastMessage: "Hi User2, the starter plan covers a baseline security review.",
-    lastMessageAt: "2026-09-15T14:02:00.000Z",
-    unread: 0,
-    totalMessages: 2,
-  },
-  {
-    _id: "client:user3",
-    lastMessage: "When is my website redesign deadline again?",
-    lastMessageAt: "2026-09-14T09:45:00.000Z",
-    unread: 2,
-    totalMessages: 1,
-  },
-  {
-    _id: "client:user4",
-    lastMessage: "Can we switch the progress reports to weekly?",
-    lastMessageAt: "2026-09-13T16:30:00.000Z",
-    unread: 0,
-    totalMessages: 1,
-  },
-  {
-    _id: "client:user5",
-    lastMessage: "Payment went through — please confirm receipt.",
-    lastMessageAt: "2026-09-12T11:10:00.000Z",
-    unread: 0,
-    totalMessages: 1,
-  },
-  {
-    _id: "client:user6",
-    lastMessage: "Just checking in on the billing dashboard access.",
-    lastMessageAt: "2026-09-11T10:00:00.000Z",
-    unread: 0,
-    totalMessages: 1,
-  },
-  {
-    _id: "client:user7",
-    lastMessage: "Do you offer ongoing maintenance after launch?",
-    lastMessageAt: "2026-09-10T08:20:00.000Z",
-    unread: 0,
-    totalMessages: 1,
-  },
-];
-
 function contactName(conversationId) {
   const [, name] = String(conversationId).split(":");
   return name ? name.charAt(0).toUpperCase() + name.slice(1) : conversationId;
@@ -97,8 +45,8 @@ function Chat() {
       setConversations(convs);
       if (convs.length > 0) setActiveId((prev) => prev || convs[0]._id);
     } catch {
-      setConversations(FALLBACK_CONVERSATIONS);
-      setActiveId((prev) => prev || FALLBACK_CONVERSATIONS[0]._id);
+      setConversations([]);
+      setError("Could not load conversations. Check your connection and try again.");
     } finally {
       setLoading(false);
     }
@@ -203,7 +151,10 @@ function Chat() {
 
         <div className="chat-contacts">
           {loading && <p className="chat-hint">Loading conversations…</p>}
-          {!loading && conversations.length === 0 && (
+          {!loading && error && conversations.length === 0 && (
+            <p className="chat-hint chat-hint-error">{error}</p>
+          )}
+          {!loading && !error && conversations.length === 0 && (
             <p className="chat-hint">No conversations yet.</p>
           )}
           {conversations.map((conv) => {

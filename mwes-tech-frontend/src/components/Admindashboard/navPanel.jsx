@@ -10,19 +10,20 @@ import {
   HelpCircle,
   LogOut,
 } from "lucide-react";
+import { BRAND } from "../../config";
 import "./navPanel.css";
 
 const MENU_ITEMS = [
-  { key: "overview", label: "Dashboard", to: "/dashboard", end: true, icon: LayoutDashboard },
-  { key: "users", label: "Users", to: "/dashboard/users", icon: Users },
-  { key: "services", label: "Services", to: "/dashboard/services", icon: Briefcase },
-  { key: "chat", label: "Chat", to: "/dashboard/chat", icon: MessageCircle },
+  { key: "overview", label: "Dashboard", to: "/admin", end: true, icon: LayoutDashboard },
+  { key: "users", label: "Users", to: "/admin/users", icon: Users },
+  { key: "services", label: "Services", to: "/admin/services", icon: Briefcase },
+  { key: "chat", label: "Chat", to: "/admin/chat", icon: MessageCircle },
 ];
 
 const OTHER_ITEMS = [
-  { key: "settings", label: "Settings", to: "/dashboard/settings", icon: Settings },
-  { key: "payments", label: "Payments", to: "/dashboard/payments", icon: CreditCard },
-  { key: "help", label: "Help", to: "/dashboard/help", icon: HelpCircle },
+  { key: "settings", label: "Settings", to: "/admin/settings", icon: Settings },
+  { key: "payments", label: "Payments", to: "/admin/payments", icon: CreditCard },
+  { key: "help", label: "Help", to: "/admin/help", icon: HelpCircle },
 ];
 
 function Sidebar({ onLogout }) {
@@ -50,9 +51,9 @@ function Sidebar({ onLogout }) {
         <img
           className="sidebar-logo"
           src="/mwes_logo.png"
-          alt="meesTech logo"
+          alt="mwesTech logo"
         />
-        <span className="sidebar-brand-name">meesTech</span>
+        <span className="sidebar-brand-name">{BRAND}</span>
       </div>
 
       <nav className="sidebar-nav" aria-label="Main navigation">

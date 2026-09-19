@@ -26,6 +26,15 @@
   --blue-deep: #2c5e8f;
   --card: #ffffff;
 
+  /* user-facing palette (landing + user dashboard) */
+  --steel: #2b5b84;
+  --steel-deep: #254f73;
+  --periwinkle: #bfd1fa;
+  --periwinkle-border: #6f8fd8;
+  --cream: #eef0e0;
+  --icon-blue: #6fa0f5;
+  --msg-navy: #1c2a47;
+
   /* typography */
   --text: #1a202c;
   --text-soft: #6b7a8d;
