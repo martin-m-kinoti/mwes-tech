@@ -25,10 +25,6 @@ const User = sequelize.define(
         isEmail: true,
       },
     },
-    service: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
     role: {
       type: DataTypes.ENUM('client', 'admin'),
       allowNull: false,

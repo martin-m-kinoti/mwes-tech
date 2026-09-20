@@ -31,7 +31,6 @@ function SignUp() {
         firstName: '',
         lastName: '',
         email: '',
-        service: '',
         password: '',
         confirmPassword: '',
     });
@@ -64,7 +63,6 @@ function SignUp() {
             firstName: formData.firstName,
             lastName: formData.lastName,
             email: formData.email,
-            service: formData.service,
             password: formData.password,
             }),
         });
@@ -143,16 +141,6 @@ function SignUp() {
                     placeholder="yours@gmail.com"
                     required
                 />
-                </div>
-
-                <div className="form-group">
-                <label htmlFor="service">Service</label>
-                <select id="service" value={formData.service} onChange={handleChange} required>
-                    <option value="" disabled>Select your role</option>
-                    <option value="data-analytics">Data Analytics</option>
-                    <option value="cyber-security">Cyber Security</option>
-                    <option value="web-development">Web Development</option>
-                </select>
                 </div>
 
                 <div className="form-group">

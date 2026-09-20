@@ -50,7 +50,6 @@ async function seedAdmin() {
         firstName: 'mwesTech',
         lastName: 'Admin',
         email: ADMIN_EMAIL,
-        service: 'Administration',
         role: 'admin',
         password: hashed,
       });
@@ -85,7 +84,7 @@ app.use('/api/orders', authenticate, orderRoutes);
 app.get('/api/auth/me', authenticate, async (req, res) => {
   try {
     const user = await User.findByPk(req.user.id, {
-      attributes: ['id', 'firstName', 'lastName', 'email', 'service', 'role'],
+      attributes: ['id', 'firstName', 'lastName', 'email', 'role'],
     });
     if (!user) return res.status(404).json({ message: 'Account not found.' });
     return res.status(200).json({ user });
@@ -105,7 +104,6 @@ app.get('/api/admin/users', authenticate, requireRole('admin'), async (req, res)
         'firstName',
         'lastName',
         'email',
-        'service',
         'role',
         'createdAt',
         'updatedAt',
@@ -227,9 +225,9 @@ app.get('/api/admin/stats', authenticate, requireRole('admin'), async (req, res)
 
 app.post('/api/auth/register', async (req, res) => {
   try {
-    const { firstName, lastName, email, service, password } = req.body;
+    const { firstName, lastName, email, password } = req.body;
 
-    if (!firstName || !lastName || !email || !service || !password) {
+    if (!firstName || !lastName || !email || !password) {
       return res.status(400).json({ message: 'All fields are required.' });
     }
 
@@ -250,7 +248,6 @@ app.post('/api/auth/register', async (req, res) => {
       firstName,
       lastName,
       email: email.toLowerCase(),
-      service,
       role: 'client',
       password: hashedPassword,
     });
@@ -262,7 +259,6 @@ app.post('/api/auth/register', async (req, res) => {
         firstName: newUser.firstName,
         lastName: newUser.lastName,
         email: newUser.email,
-        service: newUser.service,
         role: newUser.role,
       },
     });
@@ -343,7 +339,6 @@ app.post('/api/auth/login', loginLimiter, async (req, res) => {
         email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,
-        service: user.service,
         role: user.role,
       },
     });
