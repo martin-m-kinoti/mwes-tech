@@ -1,13 +1,17 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Send } from "lucide-react";
+import { api } from "../../api";
+import { useAuth } from "../../AuthContext";
 import "./chat.css";
 
-const ME = { id: "admin", name: "You" };
-const API = "http://localhost:5000/api/chat";
-
 function contactName(conversationId) {
-  const [, name] = String(conversationId).split(":");
-  return name ? name.charAt(0).toUpperCase() + name.slice(1) : conversationId;
+  const id = String(conversationId);
+  if (id === "admin") return "Admin";
+  if (id === "client") return "Client";
+  const [, name] = id.split(":");
+  if (name) return name.charAt(0).toUpperCase() + name.slice(1);
+  if (id.includes("@")) return id.split("@")[0].charAt(0).toUpperCase() + id.split("@")[0].slice(1);
+  return id;
 }
 
 function initials(name) {
@@ -27,6 +31,12 @@ function formatListTime(value) {
 }
 
 function Chat() {
+  const { user } = useAuth();
+  const me = {
+    id: user?.email || "",
+    name: [user?.firstName, user?.lastName].filter(Boolean).join(" ") || "Admin",
+  };
+
   const [conversations, setConversations] = useState([]);
   const [activeId, setActiveId] = useState("");
   const [messages, setMessages] = useState([]);
@@ -38,9 +48,7 @@ function Chat() {
 
   const loadConversations = useCallback(async () => {
     try {
-      const res = await fetch(`${API}/conversations`);
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Failed to load conversations.");
+      const data = await api.get("/api/chat/conversations");
       const convs = data.conversations || [];
       setConversations(convs);
       if (convs.length > 0) setActiveId((prev) => prev || convs[0]._id);
@@ -55,13 +63,9 @@ function Chat() {
   const loadMessages = useCallback(async (conversationId) => {
     if (!conversationId) return;
     try {
-      const res = await fetch(`${API}/messages/${encodeURIComponent(conversationId)}`);
-      const data = await res.json();
-      if (!res.ok) throw new Error();
+      const data = await api.get(`/api/chat/messages/${encodeURIComponent(conversationId)}`);
       setMessages(data.messages || []);
-      fetch(`${API}/conversations/${encodeURIComponent(conversationId)}/read`, {
-        method: "PATCH",
-      }).catch(() => {});
+      api.patch(`/api/chat/conversations/${encodeURIComponent(conversationId)}/read`).catch(() => {});
     } catch {
       setMessages([]);
     }
@@ -106,7 +110,7 @@ function Chat() {
 
       const optimistic = {
         conversationId: activeId,
-        senderId: ME.id,
+        senderId: me.id,
         senderName: "You",
         body,
         createdAt: new Date().toISOString(),
@@ -118,13 +122,10 @@ function Chat() {
       setError("");
 
       try {
-        const res = await fetch(`${API}/messages`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...optimistic, senderName: ME.name }),
+        const data = await api.post("/api/chat/messages", {
+          conversationId: activeId,
+          body,
         });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.message || "Send failed.");
         setMessages((prev) =>
           prev.map((m) => (m === optimistic ? data.message : m))
         );
@@ -136,7 +137,7 @@ function Chat() {
         setSending(false);
       }
     },
-    [draft, activeId, sending, loadConversations]
+    [draft, activeId, sending, loadConversations, me.id]
   );
 
   return (
@@ -198,7 +199,7 @@ function Chat() {
             </p>
           )}
           {messages.map((msg, i) => {
-            const outgoing = msg.senderId === ME.id || msg.senderName === "You";
+            const outgoing = msg.senderId === me.id || msg.senderName === "You";
             return (
               <div
                 key={msg._id ?? `${msg.createdAt}-${i}`}

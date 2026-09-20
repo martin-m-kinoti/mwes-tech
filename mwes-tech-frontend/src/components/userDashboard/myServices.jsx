@@ -1,46 +1,49 @@
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
+import { api } from "../../api";
 import { formatDate } from "../../utils";
 import "./myServices.css";
 
-const MY_SERVICES = [
-  {
-    id: 1,
-    service: "Web Design & Development",
-    requestedAt: "2026-09-10T09:30:00",
-    deliveryDate: "2026-12-15T16:00:00",
-    status: "In progress",
-  },
-  {
-    id: 2,
-    service: "Data Analytics",
-    requestedAt: "2026-08-28T14:12:00",
-    deliveryDate: "2026-11-05T16:00:00",
-    status: "In progress",
-  },
-  {
-    id: 3,
-    service: "AI & Automations",
-    requestedAt: "2026-09-02T11:00:00",
-    deliveryDate: "2026-10-30T16:00:00",
-    status: "Pending",
-  },
-  {
-    id: 4,
-    service: "Cyber Security",
-    requestedAt: "2026-06-20T10:05:00",
-    deliveryDate: "2026-09-28T16:00:00",
-    status: "Completed",
-  },
-];
-
 function MyServices() {
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const loadOrders = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await api.get("/api/orders");
+      setOrders(data.orders || []);
+      setError("");
+    } catch (err) {
+      setError(err.message || "Could not load your services.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadOrders();
+  }, [loadOrders]);
+
+  const rows = orders.map((o) => ({
+    id: o.id,
+    service: o.service,
+    requestedAt: o.createdAt,
+    deliveryDate: o.deliveryDate,
+    status: o.status,
+  }));
+
   return (
     <div className="u-services">
       <h2 className="u-services-title">My Services</h2>
 
-      {MY_SERVICES.length === 0 ? (
+      {loading && <p className="u-services-empty">Loading services…</p>}
+      {!loading && error && <p className="u-services-empty">{error}</p>}
+      {!loading && !error && rows.length === 0 && (
         <p className="u-services-empty">No services requested yet.</p>
-      ) : (
+      )}
+
+      {rows.length > 0 && (
         <table className="u-services-table">
           <thead>
             <tr>
@@ -51,7 +54,7 @@ function MyServices() {
             </tr>
           </thead>
           <tbody>
-            {MY_SERVICES.map((row) => (
+            {rows.map((row) => (
               <tr key={row.id}>
                 <td>{row.service}</td>
                 <td>{formatDate(row.requestedAt)}</td>

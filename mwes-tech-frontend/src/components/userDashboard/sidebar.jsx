@@ -3,6 +3,7 @@ import { NavLink } from "react-router-dom";
 import {
   LayoutDashboard,
   Briefcase,
+  ShoppingCart,
   MessageCircle,
   Settings,
   CreditCard,
@@ -14,6 +15,7 @@ import "./sidebar.css";
 
 const MENU_ITEMS = [
   { key: "home", label: "Dashboard", to: "/dashboard", end: true, icon: LayoutDashboard },
+  { key: "order", label: "Order", to: "/dashboard/order", icon: ShoppingCart },
   { key: "my-services", label: "My Services", to: "/dashboard/my-services", icon: Briefcase },
   { key: "chat", label: "Chat", to: "/dashboard/chat", icon: MessageCircle },
 ];

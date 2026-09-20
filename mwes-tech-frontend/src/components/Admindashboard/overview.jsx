@@ -1,98 +1,105 @@
-import React from "react";
-import { Users, Star, TrendingUp, Briefcase } from "lucide-react";
+import React, { useCallback, useEffect, useState } from "react";
+import { Users, Briefcase, Clock } from "lucide-react";
 import Card from "./card";
 import TrendChart from "./trendChart";
 import DataTable from "./dataTable";
 import { formatDate } from "../../utils";
+import { api } from "../../api";
 import "./overview.css";
 
-const STATS = [
-  { label: "Total Users", value: "128", delta: "+12 this month", icon: Users },
-  { label: "Active Services", value: "46", delta: "+5 this month", icon: Briefcase },
-  { label: "Growth", value: "18%", delta: "vs last quarter", icon: TrendingUp },
-];
-
-const RECENT_REQUESTS = [
-  {
-    id: 1,
-    service: "Cyber Security",
-    client: "User1",
-    email: "user1@gmail.com",
-    requestedAt: "2026-09-16T10:24:00",
-    status: "In progress",
-  },
-  {
-    id: 2,
-    service: "Web Development",
-    client: "User2",
-    email: "user2@gmail.com",
-    requestedAt: "2026-09-15T14:02:00",
-    status: "Pending",
-  },
-  {
-    id: 3,
-    service: "Data Analytics",
-    client: "User3",
-    email: "user3@gmail.com",
-    requestedAt: "2026-09-14T09:45:00",
-    status: "Completed",
-  },
-  {
-    id: 4,
-    service: "Cyber Security",
-    client: "User4",
-    email: "user4@gmail.com",
-    requestedAt: "2026-09-13T16:30:00",
-    status: "In progress",
-  },
-];
-
 function Overview() {
+  const [stats, setStats] = useState(null);
+  const [recent, setRecent] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const loadStats = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await api.get("/api/admin/stats");
+      setStats(data.stats);
+      setRecent(data.recentOrders || []);
+      setError("");
+    } catch (err) {
+      setError(err.message || "Could not load dashboard stats.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadStats();
+  }, [loadStats]);
+
+  const statRows = stats
+    ? [
+        { label: "Total Users", value: String(stats.totalUsers), delta: "registered clients", icon: Users },
+        { label: "Total Services", value: String(stats.totalOrders), delta: "all requested services", icon: Briefcase },
+        { label: "Pending Requests", value: String(stats.pendingOrders + stats.inProgressOrders), delta: "awaiting completion", icon: Clock },
+      ]
+    : [];
+
   return (
     <div className="overview">
-      <div className="overview-grid">
-        <div className="overview-left">
-          <Card title="User stats">
-            <div className="stats-list">
-              {STATS.map(({ label, value, delta, icon: Icon }) => (
-                <div className="stat-row" key={label}>
-                  <span className="stat-icon">
-                    <Icon size={16} />
-                  </span>
-                  <div className="stat-info">
-                    <p className="stat-value">{value}</p>
-                    <p className="stat-label">{label}</p>
-                    <p className="stat-delta">{delta}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Card>
+      {loading && <p className="view-loading">Loading dashboard…</p>}
+      {!loading && error && (
+        <div className="error-banner">
+          <span>{error}</span>
+          <button type="button" onClick={loadStats}>
+            Retry
+          </button>
+        </div>
+      )}
 
-          <Card title="Overall Ratings" accent="gold" className="ratings-card">
-            <div className="ratings-body">
-              <div className="ratings-stars" aria-label="4.2 out of 5 stars">
-                {[1, 2, 3, 4, 5].map((n) => (
-                  <Star
-                    key={n}
-                    size={22}
-                    className={n <= 4 ? "star filled" : "star"}
-                  />
+      {!loading && !error && (
+        <div className="overview-grid">
+          <div className="overview-left">
+            <Card title="User stats">
+              <div className="stats-list">
+                {statRows.map(({ label, value, delta, icon: Icon }) => (
+                  <div className="stat-row" key={label}>
+                    <span className="stat-icon">
+                      <Icon size={16} />
+                    </span>
+                    <div className="stat-info">
+                      <p className="stat-value">{value}</p>
+                      <p className="stat-label">{label}</p>
+                      <p className="stat-delta">{delta}</p>
+                    </div>
+                  </div>
                 ))}
               </div>
-              <p className="ratings-score">4.2 / 5</p>
-              <p className="ratings-note">Based on 38 client reviews</p>
-            </div>
-          </Card>
-        </div>
+            </Card>
 
-        <div className="overview-right">
-          <h2 className="section-title accent-orange">Services Trend</h2>
-          <Card className="chart-card">
-            <TrendChart />
-          </Card>
+            <Card title="Request Pipeline" accent="gold" className="ratings-card">
+              <div className="pipeline-body">
+                <div className="pipeline-row">
+                  <span className="pipeline-dot pending" />
+                  <span className="pipeline-label">Pending</span>
+                  <span className="pipeline-value">{stats.pendingOrders}</span>
+                </div>
+                <div className="pipeline-row">
+                  <span className="pipeline-dot progress" />
+                  <span className="pipeline-label">In progress</span>
+                  <span className="pipeline-value">{stats.inProgressOrders}</span>
+                </div>
+                <div className="pipeline-row">
+                  <span className="pipeline-dot completed" />
+                  <span className="pipeline-label">Completed</span>
+                  <span className="pipeline-value">{stats.completedOrders}</span>
+                </div>
+              </div>
+            </Card>
+          </div>
+
+          <div className="overview-right">
+            <h2 className="section-title accent-orange">Services Trend</h2>
+            <Card className="chart-card">
+              <TrendChart data={stats.monthlyOrders} />
+            </Card>
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="overview-full">
         <h2 className="section-title">Recent Service Requests</h2>
@@ -103,7 +110,7 @@ function Overview() {
             { key: "requestedAt", label: "Requested", format: formatDate },
             { key: "status", label: "Status", accent: "orange" },
           ]}
-          rows={RECENT_REQUESTS.map((r) => ({
+          rows={recent.map((r) => ({
             ...r,
             service: (
               <span className="service-chip">{r.service}</span>

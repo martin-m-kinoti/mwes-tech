@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { Search, Bell } from "lucide-react";
+import { useAuth } from "../../AuthContext";
 import "./topBar.css";
 
 const PLACEHOLDERS = [
@@ -9,9 +10,12 @@ const PLACEHOLDERS = [
   { match: "/dashboard/chat", placeholder: "Search by username..." },
 ];
 
-function TopBar({ userName = "user_name" }) {
+function TopBar() {
   const location = useLocation();
+  const { user } = useAuth();
   const [query, setQuery] = useState("");
+
+  const userName = user?.firstName || user?.email?.split("@")[0] || "";
 
   const placeholder = useMemo(() => {
     const view = PLACEHOLDERS.find(
@@ -21,6 +25,13 @@ function TopBar({ userName = "user_name" }) {
     );
     return view?.placeholder || "Search...";
   }, [location.pathname]);
+
+  const initials = userName
+    .split(" ")
+    .map((part) => part[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
 
   return (
     <header className="u-topbar">
@@ -38,7 +49,7 @@ function TopBar({ userName = "user_name" }) {
       <div className="u-actions">
         <span className="u-user-name">{userName}</span>
         <span className="u-avatar" aria-hidden="true">
-          U
+          {initials}
         </span>
         <button type="button" className="u-notif" aria-label="Notifications">
           <Bell size={18} />

@@ -2,14 +2,24 @@ import React from "react";
 import "./trendChart.css";
 
 const DATA = [34, 41, 38, 52, 48, 63, 58, 72, 68, 78, 84, 79];
-const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+function monthSpan() {
+  const arr = [];
+  const now = new Date();
+  for (let i = 11; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    arr.push(MONTH_NAMES[d.getMonth()]);
+  }
+  return arr;
+}
 
 const WIDTH = 720;
 const HEIGHT = 240;
 const PAD = { top: 18, right: 18, bottom: 30, left: 40 };
 
-function TrendChart({ data = DATA, months = MONTHS }) {
-  const max = Math.max(...data) * 1.1;
+function TrendChart({ data = DATA, months = monthSpan() }) {
+  const max = Math.max(...data) * 1.1 || 1;
   const innerW = WIDTH - PAD.left - PAD.right;
   const innerH = HEIGHT - PAD.top - PAD.bottom;
 

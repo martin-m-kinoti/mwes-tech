@@ -56,6 +56,23 @@
   text-align: right;
 }
 
+.dt-select {
+  padding: 7px 10px;
+  border: 1.5px solid var(--blue-border);
+  border-radius: 8px;
+  background: #fbfcfe;
+  color: var(--text);
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.dt-select:focus {
+  outline: none;
+  border-color: var(--periwinkle-border);
+  box-shadow: 0 0 0 3px rgba(111, 143, 216, 0.18);
+}
+
 .dt-delete {
   display: inline-flex;
   align-items: center;

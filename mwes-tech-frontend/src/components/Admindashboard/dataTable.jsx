@@ -52,6 +52,24 @@ function DataTable({ columns, rows, onDelete, emptyMessage = "No data available 
                     </td>
                   );
                 }
+                if (col.type === "select") {
+                  return (
+                    <td key={col.key} className="dt-cell">
+                      <select
+                        className="dt-select"
+                        value={row[col.key] ?? ""}
+                        onChange={(e) => col.onChange?.(row, e.target.value)}
+                        aria-label={col.label}
+                      >
+                        {(col.options || []).map((opt) => (
+                          <option key={opt} value={opt}>
+                            {opt}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                  );
+                }
                 const display = row[col.key];
                 return (
                   <td key={col.key} className="dt-cell">

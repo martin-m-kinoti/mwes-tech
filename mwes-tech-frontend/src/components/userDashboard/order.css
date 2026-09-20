@@ -1,0 +1,129 @@
+.order-view {
+  max-width: 780px;
+  padding: 20px 4px 40px;
+}
+
+.order-head {
+  margin-bottom: 20px;
+}
+
+.order-title {
+  margin: 0 0 6px;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--steel-deep);
+}
+
+.order-subtitle {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-soft);
+}
+
+.order-success {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  border-radius: 12px;
+  border: 1px solid #9cc3a8;
+  background: #eef7f1;
+  color: #1f5c38;
+  font-size: 14px;
+}
+
+.order-success-link {
+  color: var(--steel-deep);
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.order-error {
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  border-radius: 12px;
+  border: 1px solid #e7b7b0;
+  background: #fdf0ee;
+  color: #8a2f22;
+  font-size: 14px;
+}
+
+.order-form {
+  display: grid;
+  gap: 18px;
+  padding: 24px;
+  border: 1px solid #dce5f2;
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: 0 6px 18px rgba(43, 91, 132, 0.06);
+}
+
+.order-field {
+  display: grid;
+  gap: 8px;
+}
+
+.order-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--steel-deep);
+}
+
+.order-optional {
+  font-weight: 500;
+  color: var(--text-soft);
+}
+
+.order-input,
+.order-textarea {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  background: #fbfcfe;
+  color: var(--text);
+  font-size: 14px;
+  font-family: inherit;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.order-input:focus,
+.order-textarea:focus {
+  outline: none;
+  border-color: var(--periwinkle-border);
+  box-shadow: 0 0 0 3px rgba(111, 143, 216, 0.18);
+}
+
+.order-textarea {
+  resize: vertical;
+  min-height: 110px;
+}
+
+.order-submit {
+  justify-self: start;
+  padding: 12px 34px;
+  border: none;
+  border-radius: 10px;
+  background: var(--steel);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.order-submit:hover:not(:disabled) {
+  background: var(--steel-deep);
+  transform: translateY(-1px);
+}
+
+.order-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

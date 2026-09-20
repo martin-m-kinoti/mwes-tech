@@ -64,8 +64,10 @@
 
 .u-recent-cell {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 8px;
   height: 96px;
   padding: 12px;
   background: var(--periwinkle);
@@ -73,6 +75,46 @@
   font-size: 14px;
   font-weight: 600;
   text-align: center;
+}
+
+.u-recent-service {
+  color: var(--steel-deep);
+  font-weight: 700;
+}
+
+.u-recent-status {
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.55);
+  color: var(--steel-deep);
+}
+
+.u-recent-hint {
+  margin: 0;
+  padding: 20px 16px;
+  border: 1px dashed var(--periwinkle-border);
+  border-radius: 12px;
+  background: #f5f8fe;
+  color: var(--text-soft);
+  font-size: 14px;
+}
+
+.u-recent-retry {
+  margin-left: 6px;
+  border: none;
+  background: none;
+  color: var(--steel);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.u-recent-link {
+  color: var(--steel);
+  font-weight: 700;
 }
 
 @media (max-width: 720px) {

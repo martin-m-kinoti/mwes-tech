@@ -84,6 +84,71 @@
   border-color: var(--steel-deep);
 }
 
+.lp-cta-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.lp-signin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 22px;
+  border-radius: 10px;
+  border: 1.5px solid var(--steel);
+  background: transparent;
+  color: var(--steel-deep);
+  font-size: 13.5px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+
+.lp-signin:hover {
+  background: var(--steel);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.lp-session {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 16px 7px 7px;
+  border-radius: 999px;
+  border: 1.5px solid var(--periwinkle-border);
+  background: var(--periwinkle);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.lp-session:hover {
+  background: #cddcfb;
+  transform: translateY(-1px);
+}
+
+.lp-session-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--steel);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.lp-session-name {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--steel-deep);
+}
+
 /* Hero */
 .lp-hero {
   position: relative;
@@ -261,6 +326,10 @@
     width: 100%;
     justify-content: flex-start;
     overflow-x: auto;
+  }
+
+  .lp-cta-group {
+    margin-left: auto;
   }
 
   .lp-cta {

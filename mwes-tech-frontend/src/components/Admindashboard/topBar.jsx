@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { Search, Bell } from "lucide-react";
+import { useAuth } from "../../AuthContext";
 import "./topBar.css";
 
 const PLACEHOLDERS = [
@@ -10,9 +11,12 @@ const PLACEHOLDERS = [
   { match: "/admin/chat", placeholder: "Search by user..." },
 ];
 
-function TopBar({ userName = "John Admin" }) {
+function TopBar() {
   const location = useLocation();
+  const { user } = useAuth();
   const [query, setQuery] = useState("");
+
+  const userName = user?.firstName || user?.email?.split("@")[0] || "";
 
   const placeholder = useMemo(() => {
     const view = PLACEHOLDERS.find(

@@ -2,12 +2,15 @@ import React from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import Sidebar from "./sidebar";
 import TopBar from "./topBar";
+import { useAuth } from "../../AuthContext";
 import "./userDashboard.css";
 
 function UserDashboard() {
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   const handleLogout = () => {
+    logout();
     navigate("/signin");
   };
 

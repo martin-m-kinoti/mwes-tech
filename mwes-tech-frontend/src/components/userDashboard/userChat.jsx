@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Send } from "lucide-react";
+import { api } from "../../api";
+import { useAuth } from "../../AuthContext";
 import "./userChat.css";
 
 const CONVERSATION_ID = "admin";
-const ME = { id: "client", name: "You" };
-const API = "http://localhost:5000/api/chat";
 
 function formatTime(value) {
   const date = new Date(value);
@@ -13,6 +13,12 @@ function formatTime(value) {
 }
 
 function UserChat() {
+  const { user } = useAuth();
+  const me = {
+    id: user?.email || "",
+    name: [user?.firstName, user?.lastName].filter(Boolean).join(" ") || "You",
+  };
+
   const [messages, setMessages] = useState([]);
   const [draft, setDraft] = useState("");
   const [loading, setLoading] = useState(true);
@@ -23,11 +29,9 @@ function UserChat() {
   const loadMessages = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch(
-        `${API}/messages/${encodeURIComponent(CONVERSATION_ID)}`
+      const data = await api.get(
+        `/api/chat/messages/${encodeURIComponent(CONVERSATION_ID)}`
       );
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Could not load messages.");
       setMessages(data.messages || []);
       setError("");
     } catch (err) {
@@ -56,7 +60,7 @@ function UserChat() {
 
       const optimistic = {
         conversationId: CONVERSATION_ID,
-        senderId: ME.id,
+        senderId: me.id,
         senderName: "You",
         body,
         createdAt: new Date().toISOString(),
@@ -67,18 +71,10 @@ function UserChat() {
       setSending(true);
 
       try {
-        const res = await fetch(`${API}/messages`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            conversationId: CONVERSATION_ID,
-            senderId: ME.id,
-            senderName: ME.name,
-            body,
-          }),
+        const data = await api.post("/api/chat/messages", {
+          conversationId: CONVERSATION_ID,
+          body,
         });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.message || "Send failed.");
         setMessages((prev) =>
           prev.map((m) => (m === optimistic ? data.message : m))
         );
@@ -90,7 +86,7 @@ function UserChat() {
         setSending(false);
       }
     },
-    [draft, sending]
+    [draft, sending, me.id]
   );
 
   return (
@@ -127,7 +123,7 @@ function UserChat() {
         )}
 
         {messages.map((msg, i) => {
-          const outgoing = msg.senderId === ME.id;
+          const outgoing = msg.senderId === me.id;
           return (
             <div
               key={msg._id ?? `${msg.createdAt}-${i}`}

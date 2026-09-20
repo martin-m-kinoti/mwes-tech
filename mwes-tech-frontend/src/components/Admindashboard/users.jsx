@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import DataTable from "./dataTable";
 import { formatDate } from "../../utils";
+import { api } from "../../api";
 import "./views.css";
 
 function Users() {
@@ -11,9 +12,7 @@ function Users() {
 
   const loadUsers = useCallback(async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/admin/users");
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Failed to load users.");
+      const data = await api.get("/api/admin/users");
       setUsers(data.users || []);
       setError("");
     } catch (err) {
@@ -41,12 +40,7 @@ function Users() {
       if (!confirmed) return;
 
       try {
-        const res = await fetch(
-          `http://localhost:5000/api/admin/users/${row.id}`,
-          { method: "DELETE" }
-        );
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.message || "Delete failed.");
+        await api.del(`/api/admin/users/${row.id}`);
         setUsers((prev) => prev.filter((u) => u.id !== row.id));
         setNotice("User deleted successfully.");
       } catch (err) {

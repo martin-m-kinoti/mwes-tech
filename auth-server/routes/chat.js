@@ -1,7 +1,10 @@
 const express = require('express');
 const Message = require('../models/Message');
+const { authenticate } = require('../middleware/auth');
 
 const router = express.Router();
+
+router.use(authenticate);
 
 // List conversations (one per distinct conversationId)
 router.get('/conversations', async (req, res) => {
@@ -50,18 +53,22 @@ router.get('/messages/:conversationId', async (req, res) => {
 // Send a message
 router.post('/messages', async (req, res) => {
   try {
-    const { conversationId, senderId, senderName, body } = req.body;
+    const { conversationId, body } = req.body;
 
-    if (!conversationId || !senderId || !body?.trim()) {
+    if (!conversationId || !body?.trim()) {
       return res
         .status(400)
-        .json({ message: 'conversationId, senderId and body are required.' });
+        .json({ message: 'conversationId and body are required.' });
     }
+
+    const senderName = [req.user.firstName, req.user.lastName]
+      .filter(Boolean)
+      .join(' ') || req.user.email;
 
     const message = await Message.create({
       conversationId,
-      senderId,
-      senderName: senderName?.trim() || senderId,
+      senderId: req.user.email,
+      senderName,
       body: body.trim(),
     });
 

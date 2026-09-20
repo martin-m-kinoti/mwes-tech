@@ -1,9 +1,13 @@
 import { useState } from 'react';
 import './signIn.css';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
+import { api } from '../../api';
+import { useAuth } from '../../AuthContext';
 
 function SignIn() {
     const navigate = useNavigate();
+    const location = useLocation();
+    const { login } = useAuth();
     const [errors, setErrors] = useState('');
     const [showPassword, setShowPassword] = useState(false);
 
@@ -27,25 +31,26 @@ function SignIn() {
 
 
         try {
-        const response = await fetch('http://localhost:5000/api/auth/login', {
-            method: 'POST',
-            headers: {
-            'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
+        const data = await api.post('/api/auth/login', {
             email: formData.email,
             password: formData.password,
-            }),
         });
-        const data = await response.json();
-        if (!response.ok) {
-            setErrors(data.message || 'Login failed. Please try again.');
+
+        if (!data.token || !data.user) {
+            setErrors('Sign in failed. Please try again.');
             return;
         }
-        navigate('/dashboard')
-        
-        } catch {
-        setErrors('Something went wrong. Please check your connection and try again');
+
+        login(data.token, data.user);
+
+        const roleBase = data.user.role === 'admin' ? '/admin' : '/dashboard';
+        const from = location.state?.from?.pathname;
+        const destination =
+            from && from.startsWith(roleBase) ? from : roleBase;
+        navigate(destination, { replace: true });
+
+        } catch (err) {
+        setErrors(err.message || 'Something went wrong. Please check your connection and try again');
         }
   };
 
@@ -113,7 +118,7 @@ function SignIn() {
             {errors && <div className="form-error">{errors}</div>}
 
             <button type="submit" className="btn-submit" id="submitBtn">
-              Sign Up
+              Sign In
             </button>
           </form>
 

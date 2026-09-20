@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { BRAND } from "../config";
+import { useAuth } from "../AuthContext";
 import "./landingPage.css";
 
 const NAV_LINKS = [
@@ -79,6 +80,9 @@ function ServiceBlock({ service }) {
 }
 
 function LandingPage() {
+  const { user } = useAuth();
+  const sessionName = user?.firstName || user?.email?.split("@")[0] || "";
+
   return (
     <div className="lp-page" id="top">
       <header className="lp-header">
@@ -95,9 +99,27 @@ function LandingPage() {
           ))}
         </nav>
 
-        <Link to="/signup" className="lp-cta">
-          Request Service
-        </Link>
+        <div className="lp-cta-group">
+          {user ? (
+            <Link
+              to={user.role === "admin" ? "/admin" : "/dashboard"}
+              className="lp-session"
+              title="Go to dashboard"
+            >
+              <span className="lp-session-avatar" aria-hidden="true">
+                {(sessionName || "?").charAt(0).toUpperCase()}
+              </span>
+              <span className="lp-session-name">{sessionName}</span>
+            </Link>
+          ) : (
+            <Link to="/signin" className="lp-signin">
+              Sign In
+            </Link>
+          )}
+          <Link to="/signup" className="lp-cta">
+            Request Service
+          </Link>
+        </div>
       </header>
 
       <section className="lp-hero" id="services">
