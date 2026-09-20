@@ -63,12 +63,9 @@ const SERVICES = [
   },
 ];
 
-const HERO_SERVICES = SERVICES.filter((s) => s.position.startsWith("hero"));
-const LOWER_SERVICES = SERVICES.filter((s) => s.position.startsWith("lower"));
-
 function ServiceBlock({ service }) {
   return (
-    <div className={`lp-service ${service.position}`}>
+    <div className="lp-service">
       <h3 className="lp-service-title">{service.title}</h3>
       {service.lines.map((line) => (
         <p key={line} className="lp-service-line">
@@ -134,42 +131,36 @@ function LandingPage() {
 
         <h1 className="lp-hero-title">Services</h1>
 
-        <div className="lp-hero-services">
-          {HERO_SERVICES.map((service) => (
+        <div className="lp-services-column">
+          {SERVICES.map((service) => (
             <ServiceBlock key={service.key} service={service} />
           ))}
         </div>
-      </section>
-
-      <section className="lp-lower">
-        {LOWER_SERVICES.map((service) => (
-          <ServiceBlock key={service.key} service={service} />
-        ))}
       </section>
 
       <footer className="lp-footer" id="contacts">
         <h2 className="lp-footer-title">Contacts</h2>
         <div className="lp-footer-cols">
           <div className="lp-footer-col">
-            <p>123 Tech Park, Innovation Avenue</p>
-            <p>Suite 400, Nairobi</p>
+            <p>Zuhura Plaza, Thika</p>
+            <p>4th Floor, Thika</p>
             <p>Kenya</p>
           </div>
           <div className="lp-footer-col">
-            <p>+254 700 000 000</p>
-            <p>hello@mwestech.com</p>
+            <p>+254 793 002 282</p>
+            <p>admin@mwestech.co.ke</p>
             <p>Mon - Fri, 8am - 5pm</p>
           </div>
           <div className="lp-footer-col">
-            <p>X / Twitter</p>
-            <p>LinkedIn</p>
-            <p>GitHub</p>
+            <a>X / Twitter</a>
+            <a>LinkedIn</a>
+            <a>GitHub</a>
           </div>
         </div>
         <p className="lp-footer-strip">
-          Get in touch for a free consultation on your next project.
+          Get in touch for a consultation on your next project.
         </p>
-        <p className="lp-copyright">© Copyright</p>
+        <p className="lp-copyright">© 2026 mwesTech. All rights reserved.</p>
       </footer>
     </div>
   );

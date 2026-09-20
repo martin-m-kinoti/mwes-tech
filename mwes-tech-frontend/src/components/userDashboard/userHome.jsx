@@ -59,9 +59,9 @@ function UserHome() {
       )}
 
       {recent.length > 0 && (
-        <div className="u-recent-grid">
+        <div className="u-recent-list">
           {recent.slice(0, 9).map((item) => (
-            <div className="u-recent-cell" key={item.id}>
+            <div className="u-recent-row" key={item.id}>
               <span className="u-recent-service">{item.service}</span>
               <span className={`u-recent-status status-${item.status.toLowerCase().replace(" ", "-")}`}>
                 {item.status}

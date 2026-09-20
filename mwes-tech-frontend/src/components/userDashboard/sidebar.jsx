@@ -1,5 +1,5 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
 import {
   LayoutDashboard,
   Briefcase,
@@ -46,10 +46,10 @@ function Sidebar({ onLogout }) {
 
   return (
     <aside className="u-sidebar">
-      <div className="u-brand">
+      <Link to="/" className="u-brand" title="Back to landing page" aria-label="Go to landing page">
         <img className="u-logo" src="/mwes_logo.png" alt="logo" />
         <span className="u-brand-name">{BRAND}</span>
-      </div>
+      </Link>
 
       <div className="u-sidebar-divider" />
 

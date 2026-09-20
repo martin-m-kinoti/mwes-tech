@@ -9,7 +9,11 @@ router.use(authenticate);
 // List conversations (one per distinct conversationId)
 router.get('/conversations', async (req, res) => {
   try {
-    const conversations = await Message.aggregate([
+    const pipeline = [];
+    if (req.user.role !== 'admin') {
+      pipeline.push({ $match: { conversationId: req.user.email } });
+    }
+    pipeline.push(
       { $sort: { createdAt: -1 } },
       {
         $group: {
@@ -18,15 +22,17 @@ router.get('/conversations', async (req, res) => {
           lastSenderName: { $first: '$senderName' },
           lastSenderId: { $first: '$senderId' },
           lastMessageAt: { $first: '$createdAt' },
-          participants: { $addToSet: '$senderId' },
+          participants: { $addToSet: { id: '$senderId', name: '$senderName' } },
           totalMessages: { $sum: 1 },
           unread: {
             $sum: { $cond: [{ $eq: ['$read', false] }, 1, 0] },
           },
         },
       },
-      { $sort: { lastMessageAt: -1 } },
-    ]);
+      { $sort: { lastMessageAt: -1 } }
+    );
+
+    const conversations = await Message.aggregate(pipeline);
 
     return res.status(200).json({ conversations });
   } catch (err) {
@@ -39,6 +45,11 @@ router.get('/conversations', async (req, res) => {
 router.get('/messages/:conversationId', async (req, res) => {
   try {
     const { conversationId } = req.params;
+
+    if (req.user.role !== 'admin' && conversationId !== req.user.email) {
+      return res.status(403).json({ message: 'Access denied.' });
+    }
+
     const messages = await Message.find({ conversationId })
       .sort({ createdAt: 1 })
       .lean();
@@ -59,6 +70,12 @@ router.post('/messages', async (req, res) => {
       return res
         .status(400)
         .json({ message: 'conversationId and body are required.' });
+    }
+
+    if (req.user.role !== 'admin' && conversationId !== req.user.email) {
+      return res
+        .status(403)
+        .json({ message: 'You can only message within your own chat.' });
     }
 
     const senderName = [req.user.firstName, req.user.lastName]

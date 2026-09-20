@@ -22,6 +22,8 @@ function getPasswordStrength(password) {
 function SignUp() {
     const navigate = useNavigate();
 
+    const logoTo = '/';
+
     const [errors, setErrors] = useState('');
     const [showPassword, setShowPassword] = useState(false);
 
@@ -86,9 +88,9 @@ function SignUp() {
         <>
         <section className="form-section">
             <div className="form-component">
-                <div className="logo">
+                <Link to={logoTo} className="logo" title="Back to landing page">
                     <img className="logo-img" src="./mwes_logo.png" alt="company-logo" />
-                </div>
+                </Link>
                 <div className="form-head">
                     <h1>Create Account</h1>
                 </div>

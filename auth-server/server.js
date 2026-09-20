@@ -39,7 +39,7 @@ const loginLimiter = rateLimit({
 
 // Seed the admin account so the admin route is always accessible
 const ADMIN_EMAIL = 'admin@mwestech.co.ke';
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'Admin123!';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
 async function seedAdmin() {
   try {

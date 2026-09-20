@@ -6,12 +6,22 @@ import "./chat.css";
 
 function contactName(conversationId) {
   const id = String(conversationId);
-  if (id === "admin") return "Admin";
+  if (id === "admin") return "";
   if (id === "client") return "Client";
   const [, name] = id.split(":");
   if (name) return name.charAt(0).toUpperCase() + name.slice(1);
   if (id.includes("@")) return id.split("@")[0].charAt(0).toUpperCase() + id.split("@")[0].slice(1);
   return id;
+}
+
+function conversationDisplayName(conv, meId) {
+  const peers = (conv?.participants || []).filter((p) => p.id !== meId);
+  if (peers.length > 0) {
+    const peer = peers[0];
+    return peer.name || contactName(peer.id) || contactName(conv?._id);
+  }
+  if (conv?.lastSenderName) return conv.lastSenderName;
+  return contactName(conv?._id);
 }
 
 function initials(name) {
@@ -86,10 +96,10 @@ function Chat() {
     });
   }, [messages.length]);
 
-  const activeName = useMemo(
-    () => (activeId ? contactName(activeId) : ""),
-    [activeId]
-  );
+  const activeName = useMemo(() => {
+    const conv = conversations.find((c) => c._id === activeId);
+    return conv ? conversationDisplayName(conv, me.id) : "";
+  }, [activeId, conversations, me.id]);
 
   const handleSelect = (conversationId) => {
     if (conversationId === activeId) return;
@@ -159,7 +169,7 @@ function Chat() {
             <p className="chat-hint">No conversations yet.</p>
           )}
           {conversations.map((conv) => {
-            const name = contactName(conv._id);
+            const name = conversationDisplayName(conv, me.id);
             const isActive = conv._id === activeId;
             return (
               <button

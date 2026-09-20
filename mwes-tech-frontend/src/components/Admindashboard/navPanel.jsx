@@ -1,5 +1,5 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
 import {
   LayoutDashboard,
   Users,
@@ -47,14 +47,14 @@ function Sidebar({ onLogout }) {
 
   return (
     <aside className="sidebar">
-      <div className="sidebar-brand">
+      <Link to="/" className="sidebar-brand" title="Back to landing page" aria-label="Go to landing page">
         <img
           className="sidebar-logo"
           src="/mwes_logo.png"
           alt="mwesTech logo"
         />
         <span className="sidebar-brand-name">{BRAND}</span>
-      </div>
+      </Link>
 
       <nav className="sidebar-nav" aria-label="Main navigation">
         <p className="sidebar-label">Menu</p>
@@ -70,8 +70,10 @@ function Sidebar({ onLogout }) {
           className="sidebar-logout"
           onClick={onLogout}
         >
-          <LogOut size={16} aria-hidden="true" />
-          <span>Logout</span>
+          <span className="sidebar-item-icon" aria-hidden="true">
+          <LogOut size={18} />
+        </span>
+        <span>Logout</span>
         </button>
       </div>
     </aside>

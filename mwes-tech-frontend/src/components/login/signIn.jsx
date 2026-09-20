@@ -11,6 +11,8 @@ function SignIn() {
     const [errors, setErrors] = useState('');
     const [showPassword, setShowPassword] = useState(false);
 
+    const logoTo = '/';
+
     const [formData, setFormData] = useState({
         email: '',
         password: '',
@@ -58,9 +60,9 @@ function SignIn() {
     <>
       <section className="form-section">
         <div className="form-component">
-          <div className="logo">
+          <Link to={logoTo} className="logo" title="Back to landing page">
             <img className="logo-img" src="./mwes_logo.png" alt="company-logo" />
-          </div>
+          </Link>
           <div className="form-head">
             <h1>Sign In</h1>
           </div>

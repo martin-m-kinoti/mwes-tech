@@ -4,8 +4,6 @@ import { api } from "../../api";
 import { useAuth } from "../../AuthContext";
 import "./userChat.css";
 
-const CONVERSATION_ID = "admin";
-
 function formatTime(value) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "";
@@ -14,6 +12,7 @@ function formatTime(value) {
 
 function UserChat() {
   const { user } = useAuth();
+  const conversationId = user?.email || "";
   const me = {
     id: user?.email || "",
     name: [user?.firstName, user?.lastName].filter(Boolean).join(" ") || "You",
@@ -27,10 +26,11 @@ function UserChat() {
   const threadRef = useRef(null);
 
   const loadMessages = useCallback(async () => {
+    if (!conversationId) return;
     setLoading(true);
     try {
       const data = await api.get(
-        `/api/chat/messages/${encodeURIComponent(CONVERSATION_ID)}`
+        `/api/chat/messages/${encodeURIComponent(conversationId)}`
       );
       setMessages(data.messages || []);
       setError("");
@@ -39,7 +39,7 @@ function UserChat() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [conversationId]);
 
   useEffect(() => {
     loadMessages();
@@ -56,10 +56,10 @@ function UserChat() {
     async (e) => {
       e.preventDefault();
       const body = draft.trim();
-      if (!body || sending) return;
+      if (!body || !conversationId || sending) return;
 
       const optimistic = {
-        conversationId: CONVERSATION_ID,
+        conversationId,
         senderId: me.id,
         senderName: "You",
         body,
@@ -72,7 +72,7 @@ function UserChat() {
 
       try {
         const data = await api.post("/api/chat/messages", {
-          conversationId: CONVERSATION_ID,
+          conversationId,
           body,
         });
         setMessages((prev) =>
@@ -86,7 +86,7 @@ function UserChat() {
         setSending(false);
       }
     },
-    [draft, sending, me.id]
+    [draft, sending, conversationId, me.id]
   );
 
   return (

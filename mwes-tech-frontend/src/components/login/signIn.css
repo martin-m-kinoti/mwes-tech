@@ -8,6 +8,21 @@
     position:relative;
     overflow:hidden;
   }
+
+  .logo {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 5px;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .logo-img {
+    width: 75px;
+    height: 75px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
   .nav::before{
     content:"";
     position:absolute;
