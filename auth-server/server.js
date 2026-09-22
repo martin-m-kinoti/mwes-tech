@@ -13,6 +13,7 @@ const cors = require('cors');
 require('./mongo');
 const chatRoutes = require('./routes/chat');
 const orderRoutes = require('./routes/orders');
+const assistantRoutes = require('./routes/assistant');
 const { authenticate, requireRole } = require('./middleware/auth');
 
 const port = process.env.PORT || 5000;
@@ -79,6 +80,7 @@ app.get('/api/health', (req, res) => {
 
 app.use('/api/chat', chatRoutes);
 app.use('/api/orders', authenticate, orderRoutes);
+app.use('/api/assistant', assistantRoutes);
 
 // Current authenticated user
 app.get('/api/auth/me', authenticate, async (req, res) => {

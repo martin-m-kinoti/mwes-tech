@@ -1,6 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import "./App.css";
+import PublicLayout from "./components/publicLayout";
 import { AuthProvider } from "./AuthContext";
 import { RequireAdmin, RequireClient } from "./ProtectedRoute";
 import LandingPage from "./components/landingPage";
@@ -23,9 +24,11 @@ function App() {
     <AuthProvider>
       <Router>
         <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/signin" element={<SignIn />} />
+          <Route element={<PublicLayout />}>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="/signin" element={<SignIn />} />
+          </Route>
 
           <Route
             path="/dashboard"

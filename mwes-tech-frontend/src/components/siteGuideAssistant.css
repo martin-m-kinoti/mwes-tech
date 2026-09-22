@@ -1,0 +1,199 @@
+/* mwesTech site guide assistant */
+.sga-root {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 1400;
+  font-family: inherit;
+}
+
+.sga-launcher {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border: none;
+  border-radius: 50%;
+  background: var(--sga-accent, #3D4EA6);
+  color: #ffffff;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(43, 91, 132, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.sga-launcher:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(43, 91, 132, 0.45);
+}
+
+.sga-launcher-open {
+  transform: rotate(90deg);
+}
+
+.sga-panel {
+  position: absolute;
+  right: 0;
+  bottom: 72px;
+  width: min(360px, calc(100vw - 40px));
+  height: min(480px, calc(100vh - 130px));
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border: 1.5px solid var(--periwinkle-border, #6f8fd8);
+  border-radius: 16px;
+  box-shadow: 0 18px 44px rgba(43, 91, 132, 0.28);
+  overflow: hidden;
+}
+
+.sga-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  background: var(--sga-accent, #3D4EA6);
+  color: #ffffff;
+}
+
+.sga-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  flex-shrink: 0;
+}
+
+.sga-head-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.sga-head-text strong {
+  font-size: 14.5px;
+  font-weight: 700;
+}
+
+.sga-head-sub {
+  font-size: 11.5px;
+  opacity: 0.8;
+}
+
+.sga-thread {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  overflow-y: auto;
+  background: #f7f9fe;
+}
+
+.sga-msg {
+  display: flex;
+}
+
+.sga-user {
+  justify-content: flex-end;
+}
+
+.sga-bot {
+  justify-content: flex-start;
+}
+
+.sga-bubble {
+  max-width: 80%;
+  padding: 9px 13px;
+  border-radius: 14px;
+  font-size: 13.5px;
+  line-height: 1.45;
+  white-space: pre-wrap;
+}
+
+.sga-bot .sga-bubble {
+  background: #ffffff;
+  border: 1px solid var(--periwinkle-border, #6f8fd8);
+  border-bottom-left-radius: 4px;
+  color: var(--steel-deep, #254f73);
+}
+
+.sga-user .sga-bubble {
+  background: var(--sga-accent, #3D4EA6);
+  color: #ffffff;
+  border-bottom-right-radius: 4px;
+}
+
+.sga-typing {
+  letter-spacing: 3px;
+  font-weight: 700;
+}
+
+.sga-error {
+  margin: 4px 0 0;
+  font-size: 12.5px;
+  color: #c0392b;
+}
+
+.sga-composer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border-top: 1px solid var(--periwinkle-border, #6f8fd8);
+  background: #ffffff;
+}
+
+.sga-composer input {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 14px;
+  border: 1.5px solid var(--periwinkle-border, #6f8fd8);
+  border-radius: 999px;
+  font-size: 13.5px;
+  outline: none;
+  background: #f7f9fe;
+  color: var(--steel-deep, #254f73);
+}
+
+.sga-composer input:focus {
+  border-color: var(--sga-accent, #3D4EA6);
+}
+
+.sga-send {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: var(--sga-accent, #3D4EA6);
+  color: #ffffff;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: opacity 0.15s ease;
+}
+
+.sga-send:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.sga-send:not(:disabled):hover {
+  opacity: 0.9;
+}
+
+@media (max-width: 520px) {
+  .sga-root {
+    right: 14px;
+    bottom: 14px;
+  }
+
+  .sga-panel {
+    width: calc(100vw - 28px);
+    height: min(70vh, calc(100vh - 120px));
+  }
+}
