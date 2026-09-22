@@ -125,7 +125,7 @@ function LandingPage() {
             Modern tech services for growing businesses
           </h2>
           <p className="lp-hero-sub">
-            Design, data, AI and security — one trusted partner.
+            Design, data, AI and security.
           </p>
         </div>
 
@@ -152,9 +152,9 @@ function LandingPage() {
             <p>Mon - Fri, 8am - 5pm</p>
           </div>
           <div className="lp-footer-col">
-            <a>X / Twitter</a>
-            <a>LinkedIn</a>
-            <a>GitHub</a>
+            <a href="https://wa.me/254793002282">WhatsApp</a>
+            <a href="mailto:kinotimartincs095@gmail.com">Email</a>
+            <a href="https://github.com/martin-m-kinoti">GitHub</a>
           </div>
         </div>
         <p className="lp-footer-strip">

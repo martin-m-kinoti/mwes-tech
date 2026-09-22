@@ -230,7 +230,7 @@
 }
 
 .lp-service:hover {
-  transform: scale(1.03);
+  transform: scale(1.02);
   background: #ffffff;
   border-color: var(--steel);
   box-shadow: 0 12px 30px rgba(43, 91, 132, 0.22);
@@ -275,6 +275,23 @@
   max-width: 1200px;
 }
 
+.lp-footer-cols a {
+  display: flex;
+  flex-direction: column;
+  margin: 0 0 8px;
+  text-decoration: none;
+  color: var(--steel-deep);
+  border:  solid var(--steel-deep);
+  width: fit-content;
+  border-radius: 3px;
+  border-width: 1px;
+}
+
+.lp-footer-cols a:hover {
+  color: #ffffff;
+  border: solid #bec3eb;
+}
+
 .lp-footer-col p {
   margin: 0 0 8px;
   font-size: 13.5px;
@@ -295,7 +312,7 @@
   text-align: center;
   font-size: 12px;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-family: cursive;
   color: var(--steel-deep);
 }
 
