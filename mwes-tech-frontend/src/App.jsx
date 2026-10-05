@@ -54,12 +54,6 @@ function App() {
                 <Placeholder title="Payments" description="Invoices, billing and payment methods." />
               }
             />
-            <Route
-              path="help"
-              element={
-                <Placeholder title="Help" description="Guides and support resources." />
-              }
-            />
           </Route>
 
           <Route
@@ -84,12 +78,6 @@ function App() {
               path="payments"
               element={
                 <Placeholder title="Payments" description="Invoices, billing and payment methods." />
-              }
-            />
-            <Route
-              path="help"
-              element={
-                <Placeholder title="Help" description="Guides and support resources." />
               }
             />
           </Route>

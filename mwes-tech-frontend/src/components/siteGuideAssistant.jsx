@@ -4,9 +4,7 @@ import "./siteGuideAssistant.css";
 export default function SiteGuideAssistant({
     apiEndpoint = "/api/assistant",
     siteName = "mwesTech",
-    greeting = `Hi, I'm the mwesTech assistant. Tell me the service you need: 
-                Web Design and Development, Data analytics, AI and Automations, Cybersecurity, 
-                and IT Consultation services`,
+    greeting = `Hi, I'm the mwesTech assistant. Tell me the service you need.`,
     accent = "#3D4EA6",
 }) {
     const [open, setOpen] = useState(false);
@@ -93,7 +91,7 @@ export default function SiteGuideAssistant({
                         </span>
                         <div className="sga-head-text">
                             <strong>{siteName} Assistant</strong>
-                            <span className="sga-head-sub">Online — replies in seconds</span>
+                            <span className="sga-head-sub">Online</span>
                         </div>
                     </header>
 
