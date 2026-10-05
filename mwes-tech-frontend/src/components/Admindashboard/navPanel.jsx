@@ -7,7 +7,6 @@ import {
   MessageCircle,
   Settings,
   CreditCard,
-  HelpCircle,
   LogOut,
 } from "lucide-react";
 import { BRAND } from "../../config";
@@ -23,7 +22,6 @@ const MENU_ITEMS = [
 const OTHER_ITEMS = [
   { key: "settings", label: "Settings", to: "/admin/settings", icon: Settings },
   { key: "payments", label: "Payments", to: "/admin/payments", icon: CreditCard },
-  { key: "help", label: "Help", to: "/admin/help", icon: HelpCircle },
 ];
 
 function Sidebar({ onLogout }) {
