@@ -27,20 +27,6 @@ function UserHome() {
 
   return (
     <div className="u-home">
-      <div className="u-cards">
-        <div className="u-card">
-          <Link to="/dashboard/order" className="u-card-btn">
-            Request a Service
-          </Link>
-        </div>
-
-        <div className="u-card">
-          <Link to="/dashboard/my-services" className="u-card-btn">
-            My Services
-          </Link>
-        </div>
-      </div>
-
       <h2 className="u-section-title">Recent Services</h2>
 
       {loading && <p className="u-recent-hint">Loading your services…</p>}

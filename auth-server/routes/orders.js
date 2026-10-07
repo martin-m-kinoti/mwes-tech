@@ -1,6 +1,7 @@
 const express = require('express');
 const Order = require('../models/Order');
 const User = require('../models/User');
+const { authenticate } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -34,7 +35,7 @@ function isValidDuration(duration) {
 }
 
 // Create an order (authenticated client)
-router.post('/', async (req, res) => {
+router.post('/', authenticate, async (req, res) => {
   try {
     const { service, deliveryDuration, comments } = req.body;
 
@@ -62,7 +63,7 @@ router.post('/', async (req, res) => {
 });
 
 // List the current user's orders (authenticated)
-router.get('/', async (req, res) => {
+router.get('/', authenticate, async (req, res) => {
   try {
     const orders = await Order.findAll({
       where: { userId: req.user.id },
