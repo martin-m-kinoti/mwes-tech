@@ -34,12 +34,13 @@ export default function Payments() {
       "User"
     : "Guest";
 
+  const orderId = (s) => String(s.id ?? s._id ?? s.orderId ?? "");
+
   useEffect(() => {
     const fetchOrders = async () => {
       if (!user) return;
       try {
         const res = await fetch(`${API_BASE}/api/orders`, {
-          credentials: "include",
           headers: {
             Authorization: `Bearer ${localStorage.getItem("mwes_token") || ""}`,
           },
@@ -48,26 +49,6 @@ export default function Payments() {
           const data = await res.json();
           const list = Array.isArray(data) ? data : data.orders || [];
           setServices(list);
-            if (list.length && !form.serviceId) {
-              const first = list[0];
-              setForm((f) => ({
-                ...f,
-                serviceId: String(first.id || first._id || first.orderId || first.service || first.name || ""),
-              }));
-            } else if (list.length) {
-              // ensure current value still valid
-              const current = form.serviceId;
-              const valid = list.some((x) =>
-                String(x.id || x._id || x.orderId || x.service || x.name || "") === current
-              );
-              if (!valid) {
-                const first = list[0];
-                setForm((f) => ({
-                  ...f,
-                  serviceId: String(first.id || first._id || first.orderId || first.service || first.name || ""),
-                }));
-              }
-            }
         }
       } catch (e) {
         // ignore
@@ -81,7 +62,9 @@ export default function Payments() {
       if (!user) return;
       try {
         const res = await fetch(`${API_BASE}/api/payments/mine`, {
-          credentials: "include",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("mwes_token") || ""}`,
+          },
         });
         if (res.ok) {
           const data = await res.json();
@@ -125,7 +108,9 @@ export default function Payments() {
       tries++;
       try {
         const res = await fetch(`${API_BASE}/api/payments/status/${id}`, {
-          credentials: "include",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("mwes_token") || ""}`,
+          },
         });
         if (res.ok) {
           const data = await res.json();
@@ -164,13 +149,15 @@ export default function Payments() {
     try {
       const res = await fetch(`${API_BASE}/api/payments/initiate`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("mwes_token") || ""}`,
+        },
         body: JSON.stringify({
           phone: form.phone,
           amount: Number(form.amount),
           serviceId: form.serviceId,
-          description: services.find((s) => String(s.id || s._id || s.orderId || s.service) === String(form.serviceId))?.service || "mwesTech Payment",
+          description: services.find((s) => orderId(s) === String(form.serviceId))?.service || "mwesTech Payment",
         }),
       });
       const data = await res.json();
@@ -221,17 +208,19 @@ export default function Payments() {
             value={form.serviceId}
             onChange={(e) => setForm({ ...form, serviceId: e.target.value })}
           >
+            <option value="">
+              {services.length ? "Select a service" : "No services ordered"}
+            </option>
             {services.map((s) => {
-              const id = s.id || s._id || s.orderId || s.service;
+              const id = orderId(s);
               const label = s.service || s.name || s.title || s.serviceName || "Service";
-              const value = String(id || s.service || label || "");
+              const value = id || label;
               return (
-                <option key={id || label || value} value={value}>
+                <option key={value} value={value}>
                   {label}
                 </option>
               );
             })}
-            {!services.length && <option value="">No services</option>}
           </select>
           {errors.serviceId && <span className="pay-error">{errors.serviceId}</span>}
         </div>
