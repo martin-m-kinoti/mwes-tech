@@ -1,4 +1,4 @@
-require('dotenv').config();
+﻿require('dotenv').config();
 const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -14,6 +14,7 @@ require('./mongo');
 const chatRoutes = require('./routes/chat');
 const orderRoutes = require('./routes/orders');
 const assistantRoutes = require('./routes/assistant');
+const paymentRoutes = require('./routes/payments');
 const { authenticate, requireRole } = require('./middleware/auth');
 
 const port = process.env.PORT || 5000;
@@ -81,6 +82,7 @@ app.get('/api/health', (req, res) => {
 app.use('/api/chat', chatRoutes);
 app.use('/api/orders', authenticate, orderRoutes);
 app.use('/api/assistant', assistantRoutes);
+app.use('/api/payments', paymentRoutes);
 
 // Current authenticated user
 app.get('/api/auth/me', authenticate, async (req, res) => {
@@ -214,7 +216,7 @@ app.get('/api/admin/stats', authenticate, requireRole('admin'), async (req, res)
       recentOrders: recentOrders.map((o) => ({
         id: o.id,
         service: o.service,
-        email: o.User?.email || '—',
+        email: o.User?.email || 'â€”',
         requestedAt: o.createdAt,
         status: o.status,
       })),

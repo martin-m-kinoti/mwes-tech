@@ -1,0 +1,78 @@
+.adm-pay {
+  padding: 18px 24px;
+  background: #ffffff;
+  min-height: 100%;
+}
+
+.adm-pay-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.adm-pay-head h2 {
+  margin: 0;
+  font-size: 18px;
+  color: var(--steel-deep, #254f73);
+}
+
+.adm-pay-count {
+  font-size: 13px;
+  color: #6b7a99;
+}
+
+.adm-pay-msg {
+  font-size: 13px;
+  color: #6b7a99;
+}
+
+.adm-pay-err {
+  font-size: 13px;
+  color: #d32f2f;
+}
+
+.adm-pay-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--periwinkle-border, #6f8fd8);
+  border-radius: 8px;
+}
+
+.adm-pay-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.adm-pay-table thead {
+  background: #f7f9fe;
+}
+
+.adm-pay-table th,
+.adm-pay-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #eef2ff;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.adm-pay-table tbody tr:hover {
+  background: #fafbff;
+}
+
+.adm-pay-st {
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.adm-pay-st-pending {
+  color: #b77b1f;
+}
+
+.adm-pay-st-success {
+  color: #2e7d32;
+}
+
+.adm-pay-st-failed {
+  color: #d32f2f;
+}
