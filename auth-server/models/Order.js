@@ -9,13 +9,13 @@ const Order = sequelize.define(
       primaryKey: true,
       autoIncrement: true,
     },
-    userId: {
-      type: DataTypes.INTEGER,
+    firebaseUid: {
+      type: DataTypes.STRING,
       allowNull: false,
-      references: {
-        model: 'users',
-        key: 'id',
-      },
+    },
+    userEmail: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
     service: {
       type: DataTypes.STRING,

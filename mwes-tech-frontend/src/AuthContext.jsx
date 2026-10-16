@@ -1,32 +1,52 @@
-import { createContext, useContext, useState, useCallback } from "react";
+import { createContext, useContext, useState, useEffect, useCallback } from "react";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { auth } from "./firebase";
 
 const AuthContext = createContext(null);
 
-function readStoredUser() {
-  try {
-    return JSON.parse(localStorage.getItem("mwes_user") || "null");
-  } catch {
-    return null;
-  }
-}
-
 function AuthProvider({ children }) {
-  const [user, setUser] = useState(readStoredUser);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const login = useCallback((token, userData) => {
-    localStorage.setItem("mwes_token", token);
-    localStorage.setItem("mwes_user", JSON.stringify(userData));
-    setUser(userData);
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (fbUser) => {
+      if (!fbUser) {
+        setUser(null);
+        setLoading(false);
+        return;
+      }
+
+      let role = "client";
+      try {
+        const tokenResult = await fbUser.getIdTokenResult();
+        if (tokenResult.claims.role === "admin") role = "admin";
+      } catch {
+        role = "client";
+      }
+
+      const [firstName, ...rest] = (fbUser.displayName || "").split(" ").filter(Boolean);
+
+      setUser({
+        uid: fbUser.uid,
+        userid: fbUser.uid,
+        email: fbUser.email || "",
+        firstName: firstName || "",
+        lastName: rest.join(" "),
+        role,
+        photoURL: fbUser.photoURL || "",
+      });
+      setLoading(false);
+    });
+
+    return unsubscribe;
   }, []);
 
-  const logout = useCallback(() => {
-    localStorage.removeItem("mwes_token");
-    localStorage.removeItem("mwes_user");
-    setUser(null);
+  const logout = useCallback(async () => {
+    await signOut(auth);
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, logout }}>
       {children}
     </AuthContext.Provider>
   );

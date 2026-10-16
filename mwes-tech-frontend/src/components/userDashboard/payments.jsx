@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./payments.css";
 import { useAuth } from "../../AuthContext";
+import { auth } from "../../firebase";
 
 const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5000";
 
@@ -36,13 +37,18 @@ export default function Payments() {
 
   const orderId = (s) => String(s.id ?? s._id ?? s.orderId ?? "");
 
+  const authHeader = async () => {
+    const token = auth.currentUser ? await auth.currentUser.getIdToken() : "";
+    return { Authorization: `Bearer ${token}` };
+  };
+
   useEffect(() => {
     const fetchOrders = async () => {
       if (!user) return;
       try {
         const res = await fetch(`${API_BASE}/api/orders`, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("mwes_token") || ""}`,
+            ...(await authHeader()),
           },
         });
         if (res.ok) {
@@ -63,7 +69,7 @@ export default function Payments() {
       try {
         const res = await fetch(`${API_BASE}/api/payments/mine`, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("mwes_token") || ""}`,
+            ...(await authHeader()),
           },
         });
         if (res.ok) {
@@ -109,7 +115,7 @@ export default function Payments() {
       try {
         const res = await fetch(`${API_BASE}/api/payments/status/${id}`, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("mwes_token") || ""}`,
+            ...(await authHeader()),
           },
         });
         if (res.ok) {
@@ -151,7 +157,7 @@ export default function Payments() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("mwes_token") || ""}`,
+          ...(await authHeader()),
         },
         body: JSON.stringify({
           phone: form.phone,

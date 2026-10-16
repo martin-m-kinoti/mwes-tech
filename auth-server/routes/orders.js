@@ -1,6 +1,5 @@
 const express = require('express');
 const Order = require('../models/Order');
-const User = require('../models/User');
 const { authenticate } = require('../middleware/auth');
 
 const router = express.Router();
@@ -47,7 +46,8 @@ router.post('/', authenticate, async (req, res) => {
     }
 
     const order = await Order.create({
-      userId: req.user.userid,
+      firebaseUid: req.user.uid,
+      userEmail: req.user.email,
       service,
       deliveryDuration,
       deliveryDate: computeDeliveryDate(deliveryDuration),
@@ -66,7 +66,7 @@ router.post('/', authenticate, async (req, res) => {
 router.get('/', authenticate, async (req, res) => {
   try {
     const orders = await Order.findAll({
-      where: { userId: req.user.userid },
+      where: { firebaseUid: req.user.uid },
       order: [['createdAt', 'DESC']],
     });
     return res.status(200).json({ orders });

@@ -45,7 +45,7 @@ function Services() {
   const rows = orders.map((o) => ({
     id: o.id,
     service: o.service,
-    email: o.User?.email || "—",
+    email: o.userEmail || "—",
     requestedAt: o.createdAt,
     deadline: o.deliveryDate,
     status: o.status,

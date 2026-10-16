@@ -1,7 +1,7 @@
-const jwt = require('jsonwebtoken');
+const { getAuth } = require('../config/firebaseAdmin');
 
-// Verifies the Bearer token and attaches the user to req.user
-function authenticate(req, res, next) {
+// Verifies the Firebase ID token and attaches the user to req.user
+async function authenticate(req, res, next) {
   const header = req.headers.authorization || '';
   const token = header.startsWith('Bearer ') ? header.slice(7) : null;
 
@@ -9,14 +9,27 @@ function authenticate(req, res, next) {
     return res.status(401).json({ message: 'Authentication required.' });
   }
 
+  let auth;
   try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    auth = getAuth();
+  } catch {
+    return res.status(503).json({ message: 'Authentication service is not configured.' });
+  }
+
+  try {
+    const decoded = await auth.verifyIdToken(token);
+
+    const name = decoded.name || '';
+    const [firstName, ...rest] = name.split(' ').filter(Boolean);
+
     req.user = {
-      id: payload.sub,
-      email: payload.email,
-      role: payload.role,
-      firstName: payload.firstName,
-      lastName: payload.lastName,
+      uid: decoded.uid,
+      id: decoded.uid,
+      email: decoded.email || '',
+      role: decoded.role === 'admin' ? 'admin' : 'client',
+      firstName: decoded.firstName || firstName || '',
+      lastName: decoded.lastName || rest.join(' ') || '',
+      name,
     };
     return next();
   } catch {

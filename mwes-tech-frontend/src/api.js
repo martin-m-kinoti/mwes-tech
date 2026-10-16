@@ -1,12 +1,16 @@
+import { auth } from "./firebase";
+
 const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5000";
 
-function getToken() {
-  return localStorage.getItem("mwes_token");
+async function getToken() {
+  const current = auth.currentUser;
+  if (!current) return null;
+  return current.getIdToken();
 }
 
 async function request(path, { method = "GET", body } = {}) {
   const headers = { "Content-Type": "application/json" };
-  const token = getToken();
+  const token = await getToken();
   if (token) headers.Authorization = `Bearer ${token}`;
 
   const res = await fetch(`${API_BASE}${path}`, {
@@ -16,8 +20,6 @@ async function request(path, { method = "GET", body } = {}) {
   });
 
   if (res.status === 401 && token) {
-    localStorage.removeItem("mwes_token");
-    localStorage.removeItem("mwes_user");
     if (window.location.pathname !== "/signin") {
       window.location.assign("/signin");
     }

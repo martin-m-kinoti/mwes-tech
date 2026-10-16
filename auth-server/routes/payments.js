@@ -24,7 +24,7 @@ router.post("/initiate", authenticate, async (req, res) => {
         }
 
         await Payments.create({
-            userId: req.user.userid,
+            firebaseUid: req.user.uid,
             checkoutRequestId: result.CheckoutRequestID,
             merchantRequestId: result.MerchantRequestID,
             serviceId,
@@ -120,7 +120,7 @@ router.get('/status/:checkoutRequestId', authenticate, async (req, res) => {
 // User: list my payments
 router.get('/mine', authenticate, async (req, res) => {
     const records = await Payments.findAll({
-        where: { userId: req.user.userid },
+        where: { firebaseUid: req.user.uid },
         order: [['createdAt', 'DESC']],
     });
     res.json(records);

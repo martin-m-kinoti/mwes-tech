@@ -1,15 +1,48 @@
 import { useState } from 'react';
 import './signIn.css';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
-import { api } from '../../api';
-import { useAuth } from '../../AuthContext';
+import {
+  signInWithPopup,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  updateProfile,
+  signOut,
+} from 'firebase/auth';
+import { auth, googleProvider } from '../../firebase';
+
+const ROLE_HOME = {
+  admin: '/admin',
+  client: '/dashboard',
+};
+
+function friendlyAuthError(err) {
+  switch (err?.code) {
+    case 'auth/invalid-email':
+      return 'Enter a valid email address.';
+    case 'auth/wrong-password':
+    case 'auth/user-not-found':
+    case 'auth/invalid-credential':
+      return 'Invalid email or password.';
+    case 'auth/too-many-requests':
+      return 'Too many attempts. Please try again later.';
+    case 'auth/popup-closed-by-user':
+    case 'auth/cancelled-popup-request':
+      return 'Google sign-in was cancelled.';
+    case 'auth/popup-blocked':
+      return 'Your browser blocked the sign-in popup. Please allow popups and try again.';
+    case 'auth/account-exists-with-different-credential':
+      return 'An account already exists with this email using a different sign-in method.';
+    default:
+      return err?.message || 'Something went wrong. Please try again.';
+  }
+}
 
 function SignIn() {
     const navigate = useNavigate();
     const location = useLocation();
-    const { login } = useAuth();
     const [errors, setErrors] = useState('');
     const [showPassword, setShowPassword] = useState(false);
+    const [submitting, setSubmitting] = useState(false);
 
     const logoTo = '/';
 
@@ -23,36 +56,49 @@ function SignIn() {
         setFormData((prev) => ({ ...prev, [id]: value }));
     };
 
-    const handleGoogleSignin = () => {
-        // OAuth
+    const redirectAfterLogin = (role) => {
+        const roleBase = ROLE_HOME[role] || ROLE_HOME.client;
+        const from = location.state?.from?.pathname;
+        const destination =
+            from && from.startsWith(roleBase) ? from : roleBase;
+        navigate(destination, { replace: true });
+    };
+
+    const resolveRole = async (fbUser) => {
+        const tokenResult = await fbUser.getIdTokenResult(true);
+        return tokenResult.claims.role === 'admin' ? 'admin' : 'client';
+    };
+
+    const handleGoogleSignin = async () => {
+        setErrors('');
+        setSubmitting(true);
+        try {
+            const result = await signInWithPopup(auth, googleProvider);
+            const role = await resolveRole(result.user);
+            redirectAfterLogin(role);
+        } catch (err) {
+            setErrors(friendlyAuthError(err));
+        } finally {
+            setSubmitting(false);
+        }
     };
 
     const handleLogin = async (e) => {
         e.preventDefault();
         setErrors('');
-
-
+        setSubmitting(true);
         try {
-        const data = await api.post('/api/auth/login', {
-            email: formData.email,
-            password: formData.password,
-        });
-
-        if (!data.token || !data.user) {
-            setErrors('Sign in failed. Please try again.');
-            return;
-        }
-
-        login(data.token, data.user);
-
-        const roleBase = data.user.role === 'admin' ? '/admin' : '/dashboard';
-        const from = location.state?.from?.pathname;
-        const destination =
-            from && from.startsWith(roleBase) ? from : roleBase;
-        navigate(destination, { replace: true });
-
+            const result = await signInWithEmailAndPassword(
+                auth,
+                formData.email,
+                formData.password
+            );
+            const role = await resolveRole(result.user);
+            redirectAfterLogin(role);
         } catch (err) {
-        setErrors(err.message || 'Something went wrong. Please check your connection and try again');
+            setErrors(friendlyAuthError(err));
+        } finally {
+            setSubmitting(false);
         }
   };
 
@@ -67,7 +113,7 @@ function SignIn() {
             <h1>Sign In</h1>
           </div>
 
-          <button className="btn-google" type="button" onClick={handleGoogleSignin}>
+          <button className="btn-google" type="button" onClick={handleGoogleSignin} disabled={submitting}>
             <svg className="google-svg" viewBox="0 0 24 24" width="18" height="18">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
               <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
@@ -119,8 +165,8 @@ function SignIn() {
             </div>
             {errors && <div className="form-error">{errors}</div>}
 
-            <button type="submit" className="btn-submit" id="submitBtn">
-              Sign In
+            <button type="submit" className="btn-submit" id="submitBtn" disabled={submitting}>
+              {submitting ? 'Signing in…' : 'Sign In'}
             </button>
           </form>
 
