@@ -47,7 +47,7 @@ router.post('/', authenticate, async (req, res) => {
     }
 
     const order = await Order.create({
-      userId: req.user.id,
+      userId: req.user.userid,
       service,
       deliveryDuration,
       deliveryDate: computeDeliveryDate(deliveryDuration),
@@ -66,7 +66,7 @@ router.post('/', authenticate, async (req, res) => {
 router.get('/', authenticate, async (req, res) => {
   try {
     const orders = await Order.findAll({
-      where: { userId: req.user.id },
+      where: { userId: req.user.userid },
       order: [['createdAt', 'DESC']],
     });
     return res.status(200).json({ orders });

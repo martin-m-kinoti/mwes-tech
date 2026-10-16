@@ -39,7 +39,7 @@ const loginLimiter = rateLimit({
   },
 });
 
-// Seed the admin account so the admin route is always accessible
+// Seed the admin account 
 const ADMIN_EMAIL = 'admin@mwestech.co.ke';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
@@ -87,8 +87,8 @@ app.use('/api/payments', paymentRoutes);
 // Current authenticated user
 app.get('/api/auth/me', authenticate, async (req, res) => {
   try {
-    const user = await User.findByPk(req.user.id, {
-      attributes: ['id', 'firstName', 'lastName', 'email', 'role'],
+    const user = await User.findByPk(req.user.userid, {
+      attributes: ['userid', 'firstName', 'lastName', 'email', 'role'],
     });
     if (!user) return res.status(404).json({ message: 'Account not found.' });
     return res.status(200).json({ user });
@@ -104,7 +104,7 @@ app.get('/api/admin/users', authenticate, requireRole('admin'), async (req, res)
     const users = await User.findAll({
       order: [['createdAt', 'DESC']],
       attributes: [
-        'id',
+        'userid',
         'firstName',
         'lastName',
         'email',
@@ -259,7 +259,7 @@ app.post('/api/auth/register', async (req, res) => {
     return res.status(201).json({
       message: 'Account created successfully',
       user: {
-        id: newUser.id,
+        userid: newUser.userid,
         firstName: newUser.firstName,
         lastName: newUser.lastName,
         email: newUser.email,
@@ -308,13 +308,13 @@ app.post('/api/auth/login', loginLimiter, async (req, res) => {
     }
 
     const token = jwt.sign(
-      { sub: user.id, email: user.email, role: user.role, firstName: user.firstName, lastName: user.lastName },
+      { sub: user.userid, email: user.email, role: user.role, firstName: user.firstName, lastName: user.lastName },
       process.env.JWT_SECRET,
       { expiresIn: '7d' }
     );
 
     const refreshToken = jwt.sign(
-      { sub: user.id },
+      { sub: user.userid },
       process.env.JWT_REFRESH_SECRET,
       { expiresIn: '7d' }
     );
@@ -339,7 +339,7 @@ app.post('/api/auth/login', loginLimiter, async (req, res) => {
       message: 'Login successful.',
       token,
       user: {
-        id: user.id,
+        userid: user.userid,
         email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,
