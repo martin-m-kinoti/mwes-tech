@@ -65,11 +65,75 @@ mutation DeleteMyOrder($id: UUID!) @auth(level: USER) {
   )
 }
 
-# Server-only: remove every order (and the user row) for a deleted account.
-# Orders go first so no row references the deleted user.
-mutation AdminDeleteUserOrders($uid: String!) @auth(level: NO_ACCESS) {
+# Server-only: remove every order and payment (and the user row) for a
+# deleted account. Children go first so no row references the deleted user.
+mutation AdminDeleteUserData($uid: String!) @auth(level: NO_ACCESS) {
+  paymentEvent_deleteMany(where: { payment: { user: { id: { eq: $uid } } } })
+  payment_deleteMany(where: { user: { id: { eq: $uid } } })
   order_deleteMany(where: { user: { id: { eq: $uid } } })
   user_deleteMany(where: { id: { eq: $uid } })
+}
+
+mutation CreateMyPayment(
+  $checkoutRequestId: String!
+  $merchantRequestId: String
+  $serviceId: String!
+  $phone: String!
+  $amount: Float!
+) @auth(level: USER) {
+  payment_insert(
+    data: {
+      userId_expr: "auth.uid"
+      checkoutRequestId: $checkoutRequestId
+      merchantRequestId: $merchantRequestId
+      serviceId: $serviceId
+      phone: $phone
+      amount: $amount
+    }
+  )
+}
+
+# Server-only: append a lifecycle event to a payment's timeline
+mutation AdminAddPaymentEvent($paymentId: UUID!, $eventCode: String!, $message: String!)
+@auth(level: NO_ACCESS) {
+  paymentEvent_insert(
+    data: { paymentId: $paymentId, eventCode: $eventCode, message: $message }
+  )
+}
+
+# Server-only, atomic finalize: each only applies while status is still
+# PENDING, so the callback and the status poller can never double-finalize.
+# Returns the number of rows updated.
+mutation AdminFinalizePaymentSuccess(
+  $key: String!
+  $receipt: String
+  $amountPaid: Float
+  $transactionDate: String
+  $payerPhone: String
+) @auth(level: NO_ACCESS) {
+  payment_updateMany(
+    where: { checkoutRequestId: { eq: $key }, status: { eq: PENDING } }
+    data: {
+      status: SUCCESS
+      mpesaReceipt: $receipt
+      amountPaid: $amountPaid
+      transactionDate: $transactionDate
+      payerPhone: $payerPhone
+      updatedAt_expr: "request.time"
+    }
+  )
+}
+
+mutation AdminFinalizePaymentFailure($key: String!, $failReason: String)
+@auth(level: NO_ACCESS) {
+  payment_updateMany(
+    where: { checkoutRequestId: { eq: $key }, status: { eq: PENDING } }
+    data: {
+      status: FAILED
+      failReason: $failReason
+      updatedAt_expr: "request.time"
+    }
+  )
 }
 
 # Server-only: change status (customers can't call this)

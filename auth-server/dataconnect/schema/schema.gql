@@ -22,3 +22,34 @@ type Order @table(name: "orders") {
   createdAt: Timestamp! @default(expr: "request.time")
   updatedAt: Timestamp! @default(expr: "request.time")
 }
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+type Payment @table(name: "payments") {
+  user: User!                                   # owner (Firebase UID)
+  checkoutRequestId: String!                    # Daraja STK checkout id
+  merchantRequestId: String
+  serviceId: String!                            # Order id this payment is for
+  phone: String!
+  amount: Float!
+  status: PaymentStatus! @default(value: PENDING)
+  mpesaReceipt: String
+  amountPaid: Float
+  transactionDate: String                       # M-Pesa yyyyMMddHHmmss
+  payerPhone: String
+  failReason: String
+  createdAt: Timestamp! @default(expr: "request.time")
+  updatedAt: Timestamp! @default(expr: "request.time")
+}
+
+# Append-only STK push lifecycle log, rendered as a timeline in the UI.
+type PaymentEvent @table(name: "payment_events") {
+  payment: Payment!
+  eventCode: String!                            # initiated | prompt_sent | success | cancelled | timeout | failed
+  message: String!
+  createdAt: Timestamp! @default(expr: "request.time")
+}

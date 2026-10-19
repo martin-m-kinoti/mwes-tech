@@ -14,7 +14,23 @@ export enum OrderStatus {
   COMPLETED = "COMPLETED",
 };
 
+export enum PaymentStatus {
+  PENDING = "PENDING",
+  SUCCESS = "SUCCESS",
+  FAILED = "FAILED",
+};
 
+
+
+export interface AdminAddPaymentEventData {
+  paymentEvent_insert: PaymentEvent_Key;
+}
+
+export interface AdminAddPaymentEventVariables {
+  paymentId: UUIDString;
+  eventCode: string;
+  message: string;
+}
 
 export interface AdminCreateOrderData {
   user_upsert: User_Key;
@@ -38,13 +54,36 @@ export interface AdminDeleteOrderVariables {
   id: UUIDString;
 }
 
-export interface AdminDeleteUserOrdersData {
+export interface AdminDeleteUserDataData {
+  paymentEvent_deleteMany: number;
+  payment_deleteMany: number;
   order_deleteMany: number;
   user_deleteMany: number;
 }
 
-export interface AdminDeleteUserOrdersVariables {
+export interface AdminDeleteUserDataVariables {
   uid: string;
+}
+
+export interface AdminFinalizePaymentFailureData {
+  payment_updateMany: number;
+}
+
+export interface AdminFinalizePaymentFailureVariables {
+  key: string;
+  failReason?: string | null;
+}
+
+export interface AdminFinalizePaymentSuccessData {
+  payment_updateMany: number;
+}
+
+export interface AdminFinalizePaymentSuccessVariables {
+  key: string;
+  receipt?: string | null;
+  amountPaid?: number | null;
+  transactionDate?: string | null;
+  payerPhone?: string | null;
 }
 
 export interface AdminGetOrderData {
@@ -67,6 +106,18 @@ export interface AdminGetOrderData {
 
 export interface AdminGetOrderVariables {
   id: UUIDString;
+}
+
+export interface AdminGetPaymentByKeyData {
+  payments: ({
+    id: UUIDString;
+    checkoutRequestId: string;
+    status: PaymentStatus;
+  } & Payment_Key)[];
+}
+
+export interface AdminGetPaymentByKeyVariables {
+  key: string;
 }
 
 export interface AdminListOrdersByUserData {
@@ -105,6 +156,40 @@ export interface AdminListOrdersData {
   } & Order_Key)[];
 }
 
+export interface AdminListPaymentEventsData {
+  paymentEvents: ({
+    eventCode: string;
+    message: string;
+    createdAt: TimestampString;
+  })[];
+}
+
+export interface AdminListPaymentEventsVariables {
+  paymentId: UUIDString;
+}
+
+export interface AdminListPaymentsData {
+  payments: ({
+    id: UUIDString;
+    checkoutRequestId: string;
+    serviceId: string;
+    phone: string;
+    amount: number;
+    status: PaymentStatus;
+    mpesaReceipt?: string | null;
+    amountPaid?: number | null;
+    transactionDate?: string | null;
+    payerPhone?: string | null;
+    failReason?: string | null;
+    createdAt: TimestampString;
+    updatedAt: TimestampString;
+    user: {
+      id: string;
+      email?: string | null;
+    } & User_Key;
+  } & Payment_Key)[];
+}
+
 export interface AdminUpdateOrderStatusData {
   order_update?: Order_Key | null;
 }
@@ -112,6 +197,18 @@ export interface AdminUpdateOrderStatusData {
 export interface AdminUpdateOrderStatusVariables {
   id: UUIDString;
   status: OrderStatus;
+}
+
+export interface CreateMyPaymentData {
+  payment_insert: Payment_Key;
+}
+
+export interface CreateMyPaymentVariables {
+  checkoutRequestId: string;
+  merchantRequestId?: string | null;
+  serviceId: string;
+  phone: string;
+  amount: number;
 }
 
 export interface CreateOrderData {
@@ -151,6 +248,27 @@ export interface GetMyOrderVariables {
   id: UUIDString;
 }
 
+export interface GetMyPaymentByKeyData {
+  payments: ({
+    id: UUIDString;
+    checkoutRequestId: string;
+    serviceId: string;
+    phone: string;
+    amount: number;
+    status: PaymentStatus;
+    mpesaReceipt?: string | null;
+    amountPaid?: number | null;
+    transactionDate?: string | null;
+    failReason?: string | null;
+    createdAt: TimestampString;
+    updatedAt: TimestampString;
+  } & Payment_Key)[];
+}
+
+export interface GetMyPaymentByKeyVariables {
+  key: string;
+}
+
 export interface ListMyOrdersData {
   orders: ({
     id: UUIDString;
@@ -165,9 +283,36 @@ export interface ListMyOrdersData {
   } & Order_Key)[];
 }
 
+export interface ListMyPaymentsData {
+  payments: ({
+    id: UUIDString;
+    checkoutRequestId: string;
+    serviceId: string;
+    phone: string;
+    amount: number;
+    status: PaymentStatus;
+    mpesaReceipt?: string | null;
+    amountPaid?: number | null;
+    transactionDate?: string | null;
+    failReason?: string | null;
+    createdAt: TimestampString;
+    updatedAt: TimestampString;
+  } & Payment_Key)[];
+}
+
 export interface Order_Key {
   id: UUIDString;
   __typename?: 'Order_Key';
+}
+
+export interface PaymentEvent_Key {
+  id: UUIDString;
+  __typename?: 'PaymentEvent_Key';
+}
+
+export interface Payment_Key {
+  id: UUIDString;
+  __typename?: 'Payment_Key';
 }
 
 export interface UpdateMyOrderData {
@@ -251,17 +396,65 @@ export const deleteMyOrderRef: DeleteMyOrderRef;
 export function deleteMyOrder(vars: DeleteMyOrderVariables): MutationPromise<DeleteMyOrderData, DeleteMyOrderVariables>;
 export function deleteMyOrder(dc: DataConnect, vars: DeleteMyOrderVariables): MutationPromise<DeleteMyOrderData, DeleteMyOrderVariables>;
 
-interface AdminDeleteUserOrdersRef {
+interface AdminDeleteUserDataRef {
   /* Allow users to create refs without passing in DataConnect */
-  (vars: AdminDeleteUserOrdersVariables): MutationRef<AdminDeleteUserOrdersData, AdminDeleteUserOrdersVariables>;
+  (vars: AdminDeleteUserDataVariables): MutationRef<AdminDeleteUserDataData, AdminDeleteUserDataVariables>;
   /* Allow users to pass in custom DataConnect instances */
-  (dc: DataConnect, vars: AdminDeleteUserOrdersVariables): MutationRef<AdminDeleteUserOrdersData, AdminDeleteUserOrdersVariables>;
+  (dc: DataConnect, vars: AdminDeleteUserDataVariables): MutationRef<AdminDeleteUserDataData, AdminDeleteUserDataVariables>;
   operationName: string;
 }
-export const adminDeleteUserOrdersRef: AdminDeleteUserOrdersRef;
+export const adminDeleteUserDataRef: AdminDeleteUserDataRef;
 
-export function adminDeleteUserOrders(vars: AdminDeleteUserOrdersVariables): MutationPromise<AdminDeleteUserOrdersData, AdminDeleteUserOrdersVariables>;
-export function adminDeleteUserOrders(dc: DataConnect, vars: AdminDeleteUserOrdersVariables): MutationPromise<AdminDeleteUserOrdersData, AdminDeleteUserOrdersVariables>;
+export function adminDeleteUserData(vars: AdminDeleteUserDataVariables): MutationPromise<AdminDeleteUserDataData, AdminDeleteUserDataVariables>;
+export function adminDeleteUserData(dc: DataConnect, vars: AdminDeleteUserDataVariables): MutationPromise<AdminDeleteUserDataData, AdminDeleteUserDataVariables>;
+
+interface CreateMyPaymentRef {
+  /* Allow users to create refs without passing in DataConnect */
+  (vars: CreateMyPaymentVariables): MutationRef<CreateMyPaymentData, CreateMyPaymentVariables>;
+  /* Allow users to pass in custom DataConnect instances */
+  (dc: DataConnect, vars: CreateMyPaymentVariables): MutationRef<CreateMyPaymentData, CreateMyPaymentVariables>;
+  operationName: string;
+}
+export const createMyPaymentRef: CreateMyPaymentRef;
+
+export function createMyPayment(vars: CreateMyPaymentVariables): MutationPromise<CreateMyPaymentData, CreateMyPaymentVariables>;
+export function createMyPayment(dc: DataConnect, vars: CreateMyPaymentVariables): MutationPromise<CreateMyPaymentData, CreateMyPaymentVariables>;
+
+interface AdminAddPaymentEventRef {
+  /* Allow users to create refs without passing in DataConnect */
+  (vars: AdminAddPaymentEventVariables): MutationRef<AdminAddPaymentEventData, AdminAddPaymentEventVariables>;
+  /* Allow users to pass in custom DataConnect instances */
+  (dc: DataConnect, vars: AdminAddPaymentEventVariables): MutationRef<AdminAddPaymentEventData, AdminAddPaymentEventVariables>;
+  operationName: string;
+}
+export const adminAddPaymentEventRef: AdminAddPaymentEventRef;
+
+export function adminAddPaymentEvent(vars: AdminAddPaymentEventVariables): MutationPromise<AdminAddPaymentEventData, AdminAddPaymentEventVariables>;
+export function adminAddPaymentEvent(dc: DataConnect, vars: AdminAddPaymentEventVariables): MutationPromise<AdminAddPaymentEventData, AdminAddPaymentEventVariables>;
+
+interface AdminFinalizePaymentSuccessRef {
+  /* Allow users to create refs without passing in DataConnect */
+  (vars: AdminFinalizePaymentSuccessVariables): MutationRef<AdminFinalizePaymentSuccessData, AdminFinalizePaymentSuccessVariables>;
+  /* Allow users to pass in custom DataConnect instances */
+  (dc: DataConnect, vars: AdminFinalizePaymentSuccessVariables): MutationRef<AdminFinalizePaymentSuccessData, AdminFinalizePaymentSuccessVariables>;
+  operationName: string;
+}
+export const adminFinalizePaymentSuccessRef: AdminFinalizePaymentSuccessRef;
+
+export function adminFinalizePaymentSuccess(vars: AdminFinalizePaymentSuccessVariables): MutationPromise<AdminFinalizePaymentSuccessData, AdminFinalizePaymentSuccessVariables>;
+export function adminFinalizePaymentSuccess(dc: DataConnect, vars: AdminFinalizePaymentSuccessVariables): MutationPromise<AdminFinalizePaymentSuccessData, AdminFinalizePaymentSuccessVariables>;
+
+interface AdminFinalizePaymentFailureRef {
+  /* Allow users to create refs without passing in DataConnect */
+  (vars: AdminFinalizePaymentFailureVariables): MutationRef<AdminFinalizePaymentFailureData, AdminFinalizePaymentFailureVariables>;
+  /* Allow users to pass in custom DataConnect instances */
+  (dc: DataConnect, vars: AdminFinalizePaymentFailureVariables): MutationRef<AdminFinalizePaymentFailureData, AdminFinalizePaymentFailureVariables>;
+  operationName: string;
+}
+export const adminFinalizePaymentFailureRef: AdminFinalizePaymentFailureRef;
+
+export function adminFinalizePaymentFailure(vars: AdminFinalizePaymentFailureVariables): MutationPromise<AdminFinalizePaymentFailureData, AdminFinalizePaymentFailureVariables>;
+export function adminFinalizePaymentFailure(dc: DataConnect, vars: AdminFinalizePaymentFailureVariables): MutationPromise<AdminFinalizePaymentFailureData, AdminFinalizePaymentFailureVariables>;
 
 interface AdminUpdateOrderStatusRef {
   /* Allow users to create refs without passing in DataConnect */
@@ -346,4 +539,64 @@ export const adminGetOrderRef: AdminGetOrderRef;
 
 export function adminGetOrder(vars: AdminGetOrderVariables, options?: ExecuteQueryOptions): QueryPromise<AdminGetOrderData, AdminGetOrderVariables>;
 export function adminGetOrder(dc: DataConnect, vars: AdminGetOrderVariables, options?: ExecuteQueryOptions): QueryPromise<AdminGetOrderData, AdminGetOrderVariables>;
+
+interface ListMyPaymentsRef {
+  /* Allow users to create refs without passing in DataConnect */
+  (): QueryRef<ListMyPaymentsData, undefined>;
+  /* Allow users to pass in custom DataConnect instances */
+  (dc: DataConnect): QueryRef<ListMyPaymentsData, undefined>;
+  operationName: string;
+}
+export const listMyPaymentsRef: ListMyPaymentsRef;
+
+export function listMyPayments(options?: ExecuteQueryOptions): QueryPromise<ListMyPaymentsData, undefined>;
+export function listMyPayments(dc: DataConnect, options?: ExecuteQueryOptions): QueryPromise<ListMyPaymentsData, undefined>;
+
+interface GetMyPaymentByKeyRef {
+  /* Allow users to create refs without passing in DataConnect */
+  (vars: GetMyPaymentByKeyVariables): QueryRef<GetMyPaymentByKeyData, GetMyPaymentByKeyVariables>;
+  /* Allow users to pass in custom DataConnect instances */
+  (dc: DataConnect, vars: GetMyPaymentByKeyVariables): QueryRef<GetMyPaymentByKeyData, GetMyPaymentByKeyVariables>;
+  operationName: string;
+}
+export const getMyPaymentByKeyRef: GetMyPaymentByKeyRef;
+
+export function getMyPaymentByKey(vars: GetMyPaymentByKeyVariables, options?: ExecuteQueryOptions): QueryPromise<GetMyPaymentByKeyData, GetMyPaymentByKeyVariables>;
+export function getMyPaymentByKey(dc: DataConnect, vars: GetMyPaymentByKeyVariables, options?: ExecuteQueryOptions): QueryPromise<GetMyPaymentByKeyData, GetMyPaymentByKeyVariables>;
+
+interface AdminGetPaymentByKeyRef {
+  /* Allow users to create refs without passing in DataConnect */
+  (vars: AdminGetPaymentByKeyVariables): QueryRef<AdminGetPaymentByKeyData, AdminGetPaymentByKeyVariables>;
+  /* Allow users to pass in custom DataConnect instances */
+  (dc: DataConnect, vars: AdminGetPaymentByKeyVariables): QueryRef<AdminGetPaymentByKeyData, AdminGetPaymentByKeyVariables>;
+  operationName: string;
+}
+export const adminGetPaymentByKeyRef: AdminGetPaymentByKeyRef;
+
+export function adminGetPaymentByKey(vars: AdminGetPaymentByKeyVariables, options?: ExecuteQueryOptions): QueryPromise<AdminGetPaymentByKeyData, AdminGetPaymentByKeyVariables>;
+export function adminGetPaymentByKey(dc: DataConnect, vars: AdminGetPaymentByKeyVariables, options?: ExecuteQueryOptions): QueryPromise<AdminGetPaymentByKeyData, AdminGetPaymentByKeyVariables>;
+
+interface AdminListPaymentEventsRef {
+  /* Allow users to create refs without passing in DataConnect */
+  (vars: AdminListPaymentEventsVariables): QueryRef<AdminListPaymentEventsData, AdminListPaymentEventsVariables>;
+  /* Allow users to pass in custom DataConnect instances */
+  (dc: DataConnect, vars: AdminListPaymentEventsVariables): QueryRef<AdminListPaymentEventsData, AdminListPaymentEventsVariables>;
+  operationName: string;
+}
+export const adminListPaymentEventsRef: AdminListPaymentEventsRef;
+
+export function adminListPaymentEvents(vars: AdminListPaymentEventsVariables, options?: ExecuteQueryOptions): QueryPromise<AdminListPaymentEventsData, AdminListPaymentEventsVariables>;
+export function adminListPaymentEvents(dc: DataConnect, vars: AdminListPaymentEventsVariables, options?: ExecuteQueryOptions): QueryPromise<AdminListPaymentEventsData, AdminListPaymentEventsVariables>;
+
+interface AdminListPaymentsRef {
+  /* Allow users to create refs without passing in DataConnect */
+  (): QueryRef<AdminListPaymentsData, undefined>;
+  /* Allow users to pass in custom DataConnect instances */
+  (dc: DataConnect): QueryRef<AdminListPaymentsData, undefined>;
+  operationName: string;
+}
+export const adminListPaymentsRef: AdminListPaymentsRef;
+
+export function adminListPayments(options?: ExecuteQueryOptions): QueryPromise<AdminListPaymentsData, undefined>;
+export function adminListPayments(dc: DataConnect, options?: ExecuteQueryOptions): QueryPromise<AdminListPaymentsData, undefined>;
 

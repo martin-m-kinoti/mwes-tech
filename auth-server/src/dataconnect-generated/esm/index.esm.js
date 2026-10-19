@@ -6,6 +6,12 @@ export const OrderStatus = {
   COMPLETED: "COMPLETED",
 }
 
+export const PaymentStatus = {
+  PENDING: "PENDING",
+  SUCCESS: "SUCCESS",
+  FAILED: "FAILED",
+}
+
 export const connectorConfig = {
   connector: 'connector',
   service: 'mwestech-service',
@@ -71,16 +77,64 @@ export function deleteMyOrder(dcOrVars, vars) {
   return executeMutation(deleteMyOrderRef(dcInstance, inputVars));
 }
 
-export const adminDeleteUserOrdersRef = (dcOrVars, vars) => {
+export const adminDeleteUserDataRef = (dcOrVars, vars) => {
   const { dc: dcInstance, vars: inputVars} = validateArgs(connectorConfig, dcOrVars, vars, true);
   dcInstance._useGeneratedSdk();
-  return mutationRef(dcInstance, 'AdminDeleteUserOrders', inputVars);
+  return mutationRef(dcInstance, 'AdminDeleteUserData', inputVars);
 }
-adminDeleteUserOrdersRef.operationName = 'AdminDeleteUserOrders';
+adminDeleteUserDataRef.operationName = 'AdminDeleteUserData';
 
-export function adminDeleteUserOrders(dcOrVars, vars) {
+export function adminDeleteUserData(dcOrVars, vars) {
   const { dc: dcInstance, vars: inputVars } = validateArgs(connectorConfig, dcOrVars, vars, true);
-  return executeMutation(adminDeleteUserOrdersRef(dcInstance, inputVars));
+  return executeMutation(adminDeleteUserDataRef(dcInstance, inputVars));
+}
+
+export const createMyPaymentRef = (dcOrVars, vars) => {
+  const { dc: dcInstance, vars: inputVars} = validateArgs(connectorConfig, dcOrVars, vars, true);
+  dcInstance._useGeneratedSdk();
+  return mutationRef(dcInstance, 'CreateMyPayment', inputVars);
+}
+createMyPaymentRef.operationName = 'CreateMyPayment';
+
+export function createMyPayment(dcOrVars, vars) {
+  const { dc: dcInstance, vars: inputVars } = validateArgs(connectorConfig, dcOrVars, vars, true);
+  return executeMutation(createMyPaymentRef(dcInstance, inputVars));
+}
+
+export const adminAddPaymentEventRef = (dcOrVars, vars) => {
+  const { dc: dcInstance, vars: inputVars} = validateArgs(connectorConfig, dcOrVars, vars, true);
+  dcInstance._useGeneratedSdk();
+  return mutationRef(dcInstance, 'AdminAddPaymentEvent', inputVars);
+}
+adminAddPaymentEventRef.operationName = 'AdminAddPaymentEvent';
+
+export function adminAddPaymentEvent(dcOrVars, vars) {
+  const { dc: dcInstance, vars: inputVars } = validateArgs(connectorConfig, dcOrVars, vars, true);
+  return executeMutation(adminAddPaymentEventRef(dcInstance, inputVars));
+}
+
+export const adminFinalizePaymentSuccessRef = (dcOrVars, vars) => {
+  const { dc: dcInstance, vars: inputVars} = validateArgs(connectorConfig, dcOrVars, vars, true);
+  dcInstance._useGeneratedSdk();
+  return mutationRef(dcInstance, 'AdminFinalizePaymentSuccess', inputVars);
+}
+adminFinalizePaymentSuccessRef.operationName = 'AdminFinalizePaymentSuccess';
+
+export function adminFinalizePaymentSuccess(dcOrVars, vars) {
+  const { dc: dcInstance, vars: inputVars } = validateArgs(connectorConfig, dcOrVars, vars, true);
+  return executeMutation(adminFinalizePaymentSuccessRef(dcInstance, inputVars));
+}
+
+export const adminFinalizePaymentFailureRef = (dcOrVars, vars) => {
+  const { dc: dcInstance, vars: inputVars} = validateArgs(connectorConfig, dcOrVars, vars, true);
+  dcInstance._useGeneratedSdk();
+  return mutationRef(dcInstance, 'AdminFinalizePaymentFailure', inputVars);
+}
+adminFinalizePaymentFailureRef.operationName = 'AdminFinalizePaymentFailure';
+
+export function adminFinalizePaymentFailure(dcOrVars, vars) {
+  const { dc: dcInstance, vars: inputVars } = validateArgs(connectorConfig, dcOrVars, vars, true);
+  return executeMutation(adminFinalizePaymentFailureRef(dcInstance, inputVars));
 }
 
 export const adminUpdateOrderStatusRef = (dcOrVars, vars) => {
@@ -170,5 +224,70 @@ export function adminGetOrder(dcOrVars, varsOrOptions, options) {
   
   const { dc: dcInstance, vars: inputVars, options: inputOpts } = validateArgsWithOptions(connectorConfig, dcOrVars, varsOrOptions, options, true, true);
   return executeQuery(adminGetOrderRef(dcInstance, inputVars), inputOpts && { fetchPolicy: inputOpts.fetchPolicy });
+}
+
+export const listMyPaymentsRef = (dc) => {
+  const { dc: dcInstance} = validateArgs(connectorConfig, dc, undefined);
+  dcInstance._useGeneratedSdk();
+  return queryRef(dcInstance, 'ListMyPayments');
+}
+listMyPaymentsRef.operationName = 'ListMyPayments';
+
+export function listMyPayments(dcOrOptions, options) {
+  
+  const { dc: dcInstance, vars: inputVars, options: inputOpts } = validateArgsWithOptions(connectorConfig, dcOrOptions, options, undefined,false, false);
+  return executeQuery(listMyPaymentsRef(dcInstance, inputVars), inputOpts && { fetchPolicy: inputOpts.fetchPolicy });
+}
+
+export const getMyPaymentByKeyRef = (dcOrVars, vars) => {
+  const { dc: dcInstance, vars: inputVars} = validateArgs(connectorConfig, dcOrVars, vars, true);
+  dcInstance._useGeneratedSdk();
+  return queryRef(dcInstance, 'GetMyPaymentByKey', inputVars);
+}
+getMyPaymentByKeyRef.operationName = 'GetMyPaymentByKey';
+
+export function getMyPaymentByKey(dcOrVars, varsOrOptions, options) {
+  
+  const { dc: dcInstance, vars: inputVars, options: inputOpts } = validateArgsWithOptions(connectorConfig, dcOrVars, varsOrOptions, options, true, true);
+  return executeQuery(getMyPaymentByKeyRef(dcInstance, inputVars), inputOpts && { fetchPolicy: inputOpts.fetchPolicy });
+}
+
+export const adminGetPaymentByKeyRef = (dcOrVars, vars) => {
+  const { dc: dcInstance, vars: inputVars} = validateArgs(connectorConfig, dcOrVars, vars, true);
+  dcInstance._useGeneratedSdk();
+  return queryRef(dcInstance, 'AdminGetPaymentByKey', inputVars);
+}
+adminGetPaymentByKeyRef.operationName = 'AdminGetPaymentByKey';
+
+export function adminGetPaymentByKey(dcOrVars, varsOrOptions, options) {
+  
+  const { dc: dcInstance, vars: inputVars, options: inputOpts } = validateArgsWithOptions(connectorConfig, dcOrVars, varsOrOptions, options, true, true);
+  return executeQuery(adminGetPaymentByKeyRef(dcInstance, inputVars), inputOpts && { fetchPolicy: inputOpts.fetchPolicy });
+}
+
+export const adminListPaymentEventsRef = (dcOrVars, vars) => {
+  const { dc: dcInstance, vars: inputVars} = validateArgs(connectorConfig, dcOrVars, vars, true);
+  dcInstance._useGeneratedSdk();
+  return queryRef(dcInstance, 'AdminListPaymentEvents', inputVars);
+}
+adminListPaymentEventsRef.operationName = 'AdminListPaymentEvents';
+
+export function adminListPaymentEvents(dcOrVars, varsOrOptions, options) {
+  
+  const { dc: dcInstance, vars: inputVars, options: inputOpts } = validateArgsWithOptions(connectorConfig, dcOrVars, varsOrOptions, options, true, true);
+  return executeQuery(adminListPaymentEventsRef(dcInstance, inputVars), inputOpts && { fetchPolicy: inputOpts.fetchPolicy });
+}
+
+export const adminListPaymentsRef = (dc) => {
+  const { dc: dcInstance} = validateArgs(connectorConfig, dc, undefined);
+  dcInstance._useGeneratedSdk();
+  return queryRef(dcInstance, 'AdminListPayments');
+}
+adminListPaymentsRef.operationName = 'AdminListPayments';
+
+export function adminListPayments(dcOrOptions, options) {
+  
+  const { dc: dcInstance, vars: inputVars, options: inputOpts } = validateArgsWithOptions(connectorConfig, dcOrOptions, options, undefined,false, false);
+  return executeQuery(adminListPaymentsRef(dcInstance, inputVars), inputOpts && { fetchPolicy: inputOpts.fetchPolicy });
 }
 
