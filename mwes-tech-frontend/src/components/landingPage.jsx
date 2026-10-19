@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { Menu, X } from "lucide-react";
 import { BRAND } from "../config";
 import { useAuth } from "../AuthContext";
 import "./landingPage.css";
@@ -78,7 +79,9 @@ function ServiceBlock({ service }) {
 
 function LandingPage() {
   const { user } = useAuth();
+  const [menuOpen, setMenuOpen] = useState(false);
   const sessionName = user?.firstName || user?.email?.split("@")[0] || "";
+  const dashboardTo = user?.role === "admin" ? "/admin" : "/dashboard";
 
   return (
     <div className="lp-page" id="top">
@@ -99,7 +102,7 @@ function LandingPage() {
         <div className="lp-cta-group">
           {user ? (
             <Link
-              to={user.role === "admin" ? "/admin" : "/dashboard"}
+              to={dashboardTo}
               className="lp-session"
               title="Go to dashboard"
             >
@@ -117,6 +120,47 @@ function LandingPage() {
             Request Service
           </Link>
         </div>
+
+        <button
+          type="button"
+          className="lp-menu-btn"
+          onClick={() => setMenuOpen((open) => !open)}
+          aria-label={menuOpen ? "Close menu" : "Open menu"}
+          aria-expanded={menuOpen}
+        >
+          {menuOpen ? <X size={20} /> : <Menu size={20} />}
+        </button>
+
+        {menuOpen && (
+          <div className="lp-mobile-menu">
+            {NAV_LINKS.map((link) => (
+              <a
+                key={link.label}
+                href={link.href}
+                className="lp-mobile-link"
+                onClick={() => setMenuOpen(false)}
+              >
+                {link.label}
+              </a>
+            ))}
+            {!user && (
+              <Link
+                to="/signin"
+                className="lp-mobile-link"
+                onClick={() => setMenuOpen(false)}
+              >
+                Sign In
+              </Link>
+            )}
+            <Link
+              to={user ? dashboardTo : "/signup"}
+              className="lp-mobile-link lp-mobile-link-cta"
+              onClick={() => setMenuOpen(false)}
+            >
+              {user ? "Go to Dashboard" : "Request Service"}
+            </Link>
+          </div>
+        )}
       </header>
 
       <section className="lp-hero" id="services">

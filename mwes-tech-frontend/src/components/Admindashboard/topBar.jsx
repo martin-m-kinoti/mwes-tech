@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { Search, Bell } from "lucide-react";
+import { Search, Bell, Menu } from "lucide-react";
 import { useAuth } from "../../AuthContext";
 import "./topBar.css";
 
@@ -11,7 +11,7 @@ const PLACEHOLDERS = [
   { match: "/admin/chat", placeholder: "Search by user..." },
 ];
 
-function TopBar() {
+function TopBar({ onMenuClick }) {
   const location = useLocation();
   const { user } = useAuth();
   const [query, setQuery] = useState("");
@@ -36,6 +36,16 @@ function TopBar() {
 
   return (
     <header className="topbar">
+      {onMenuClick && (
+        <button
+          type="button"
+          className="topbar-menu-btn"
+          onClick={onMenuClick}
+          aria-label="Open menu"
+        >
+          <Menu size={20} />
+        </button>
+      )}
       <div className="topbar-search">
         <Search size={16} className="topbar-search-icon" aria-hidden="true" />
         <input

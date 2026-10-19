@@ -8,6 +8,7 @@ import {
   Settings,
   CreditCard,
   LogOut,
+  X,
 } from "lucide-react";
 import { BRAND } from "../../config";
 import "./sidebar.css";
@@ -24,7 +25,7 @@ const OTHER_ITEMS = [
   { key: "payments", label: "Payments", to: "/dashboard/payments", icon: CreditCard },
 ];
 
-function Sidebar({ onLogout }) {
+function Sidebar({ onLogout, open, onClose }) {
   const renderItems = (items) =>
     items.map(({ key, label, to, end, icon: Icon }) => (
       <NavLink
@@ -43,11 +44,21 @@ function Sidebar({ onLogout }) {
     ));
 
   return (
-    <aside className="u-sidebar">
-      <Link to="/" className="u-brand" title="Back to landing page" aria-label="Go to landing page">
-        <img className="u-logo" src="/mwes_logo.png" alt="logo" />
-        <span className="u-brand-name">{BRAND}</span>
-      </Link>
+    <aside className={`u-sidebar${open ? " u-sidebar-open" : ""}`}>
+      <div className="u-sidebar-head">
+        <Link to="/" className="u-brand" title="Back to landing page" aria-label="Go to landing page">
+          <img className="u-logo" src="/mwes_logo.png" alt="logo" />
+          <span className="u-brand-name">{BRAND}</span>
+        </Link>
+        <button
+          type="button"
+          className="u-menu-close"
+          onClick={onClose}
+          aria-label="Close menu"
+        >
+          <X size={18} />
+        </button>
+      </div>
 
       <div className="u-sidebar-divider" />
 

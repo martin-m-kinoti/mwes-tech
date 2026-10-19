@@ -17,6 +17,20 @@
   min-width: 0;
 }
 
+/* Dimmed layer behind the open mobile menu drawer. */
+.user-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  background: rgba(18, 34, 56, 0.45);
+}
+
+@media (min-width: 861px) {
+  .user-backdrop {
+    display: none;
+  }
+}
+
 @media (max-width: 640px) {
   .user-content {
     padding: 18px 16px;

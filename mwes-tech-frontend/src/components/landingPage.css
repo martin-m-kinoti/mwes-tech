@@ -90,6 +90,63 @@
   gap: 10px;
 }
 
+/* Hamburger shown on mobile only; the panel it opens hangs off the sticky
+   header so it stays attached while scrolling. */
+.lp-menu-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border: 1.5px solid var(--periwinkle-border);
+  border-radius: 10px;
+  background: var(--periwinkle);
+  color: var(--steel-deep);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.lp-mobile-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 14px 14px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 18px 30px rgba(43, 91, 132, 0.18);
+}
+
+.lp-mobile-link {
+  display: flex;
+  align-items: center;
+  min-height: 48px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--steel-deep);
+  text-decoration: none;
+}
+
+.lp-mobile-link:hover {
+  background: var(--periwinkle);
+}
+
+.lp-mobile-link-cta {
+  background: var(--steel);
+  color: #ffffff;
+  margin-top: 6px;
+}
+
+.lp-mobile-link-cta:hover {
+  background: var(--steel-deep);
+  color: #ffffff;
+}
+
 .lp-signin {
   display: inline-flex;
   align-items: center;
@@ -344,9 +401,60 @@
   }
 }
 
+/* Mobile: the inline nav and sign-in move into the hamburger menu. */
+@media (max-width: 860px) {
+  .lp-nav,
+  .lp-signin,
+  .lp-session-name {
+    display: none;
+  }
+
+  .lp-menu-btn {
+    display: inline-flex;
+    margin-left: auto;
+  }
+
+  .lp-header {
+    gap: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .lp-cta {
+    display: none;
+  }
+
+  .lp-session {
+    padding: 7px;
+  }
+}
+
 @media (max-width: 640px) {
   .lp-hero {
-    padding-left: 16px;
-    padding-right: 16px;
+    padding: 72px 16px 40px;
+    gap: 16px;
+  }
+
+  .lp-service {
+    padding: 14px 16px;
+  }
+
+  .lp-footer {
+    padding: 32px 16px 24px;
+  }
+
+  .lp-footer-cols {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .lp-footer-title {
+    margin-bottom: 18px;
+  }
+}
+
+@media (min-width: 861px) {
+  .lp-mobile-menu {
+    display: none;
   }
 }

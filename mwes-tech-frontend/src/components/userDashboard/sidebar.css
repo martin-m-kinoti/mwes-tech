@@ -12,6 +12,27 @@
   overflow-y: auto;
 }
 
+.u-sidebar-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.u-menu-close {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.35);
+  color: #ffffff;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
 .u-brand {
   display: flex;
   align-items: center;
@@ -119,31 +140,46 @@
   padding-top: 6px;
 }
 
+/* Mobile: the sidebar becomes an off-canvas menu drawer opened from the
+   topbar hamburger. Full labels return, and items grow to touch-target size. */
 @media (max-width: 860px) {
   .u-sidebar {
-    width: 74px;
-    padding: 20px 10px 14px;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: min(280px, 84vw);
+    height: 100vh;
+    height: 100dvh;
+    z-index: 60;
+    padding: 18px 14px calc(16px + env(safe-area-inset-bottom));
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    box-shadow: 0 0 40px rgba(18, 34, 56, 0.25);
   }
 
-  .u-brand-name,
-  .u-nav-label,
-  .u-nav-pill {
-    display: none;
+  .u-sidebar-open {
+    transform: translateX(0);
   }
 
-  .u-brand {
-    justify-content: center;
-    padding: 0;
+  .u-menu-close {
+    display: inline-flex;
   }
 
   .u-nav-item,
   .u-logout {
-    justify-content: center;
-    padding: 5px;
+    min-height: 44px;
   }
+}
 
-  .u-nav-icon {
-    width: 36px;
-    height: 36px;
+@media (min-width: 861px) {
+  .u-sidebar {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .u-sidebar {
+    transition: none;
   }
 }

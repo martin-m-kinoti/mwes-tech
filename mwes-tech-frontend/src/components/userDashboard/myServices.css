@@ -63,6 +63,15 @@
   .u-services-table {
     display: block;
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
     white-space: nowrap;
+  }
+
+  .u-services-table th {
+    padding: 10px 12px;
+  }
+
+  .u-services-table td {
+    padding: 11px 12px;
   }
 }

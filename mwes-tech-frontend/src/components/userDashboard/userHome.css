@@ -124,3 +124,20 @@
     flex-direction: column;
   }
 }
+
+/* Mobile: shrink the oversized action cards and give the buttons the full
+   row so they are easy to hit. */
+@media (max-width: 640px) {
+  .u-card {
+    padding: 26px 18px;
+  }
+
+  .u-card-btn {
+    width: 100%;
+    min-height: 48px;
+  }
+
+  .u-recent-row {
+    padding: 12px 14px;
+  }
+}
