@@ -1,6 +1,6 @@
 const express = require('express');
-const Order = require('../models/Order');
 const { authenticate } = require('../middleware/auth');
+const { execute, insertedId, normalizeOrder } = require('../config/dataconnect');
 
 const router = express.Router();
 
@@ -33,6 +33,13 @@ function isValidDuration(duration) {
   return Object.prototype.hasOwnProperty.call(DURATIONS_IN_DAYS, duration);
 }
 
+// Fetches a single order belonging to the current user.
+async function fetchMyOrder(id, user) {
+  if (!id) return null;
+  const data = await execute('GetMyOrder', { variables: { id }, user });
+  return normalizeOrder((data.orders || [])[0]) || null;
+}
+
 // Create an order (authenticated client)
 router.post('/', authenticate, async (req, res) => {
   try {
@@ -45,17 +52,41 @@ router.post('/', authenticate, async (req, res) => {
       return res.status(400).json({ message: 'Please select a valid delivery duration.' });
     }
 
-    const order = await Order.create({
-      firebaseUid: req.user.uid,
-      userEmail: req.user.email,
-      service,
-      deliveryDuration,
-      deliveryDate: computeDeliveryDate(deliveryDuration),
-      comments: String(comments || '').trim(),
-      status: 'Pending',
+    const deliveryDate = computeDeliveryDate(deliveryDuration).toISOString();
+    const cleanComments = String(comments || '').trim();
+
+    // The Orders row references the User row, so make sure it exists first.
+    // Idempotent, so it is safe to call on every order.
+    await execute('UpsertCurrentUser', { user: req.user });
+
+    // userEmail is filled in by the schema default (@default(expr:
+    // "auth.token.email")) from the impersonated token, so it is not passed
+    // as a variable here.
+    const created = await execute('CreateOrder', {
+      user: req.user,
+      variables: {
+        service,
+        deliveryDuration,
+        deliveryDate,
+        comments: cleanComments,
+      },
     });
 
-    return res.status(201).json({ order });
+    const id = insertedId(created);
+    const order = await fetchMyOrder(id, req.user);
+
+    return res.status(201).json({
+      order:
+        order || {
+          id,
+          service,
+          deliveryDuration,
+          deliveryDate,
+          comments: cleanComments,
+          status: 'Pending',
+          userEmail: req.user.email,
+        },
+    });
   } catch (err) {
     console.error('Create order error:', err);
     return res.status(500).json({ message: 'Could not place the order.' });
@@ -65,11 +96,8 @@ router.post('/', authenticate, async (req, res) => {
 // List the current user's orders (authenticated)
 router.get('/', authenticate, async (req, res) => {
   try {
-    const orders = await Order.findAll({
-      where: { firebaseUid: req.user.uid },
-      order: [['createdAt', 'DESC']],
-    });
-    return res.status(200).json({ orders });
+    const data = await execute('ListMyOrders', { user: req.user });
+    return res.status(200).json({ orders: (data.orders || []).map(normalizeOrder) });
   } catch (err) {
     console.error('List orders error:', err);
     return res.status(500).json({ message: 'Could not load your services.' });

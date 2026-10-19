@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./payments.css";
 import { useAuth } from "../../AuthContext";
 import { auth } from "../../firebase";
@@ -14,10 +14,13 @@ export default function Payments() {
   });
   const [services, setServices] = useState([]);
   const [errors, setErrors] = useState({});
-  const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState(null);
-  const [checkoutId, setCheckoutId] = useState(null);
+  // "sending" = initiate request in flight, "awaiting" = polling for the PIN entry.
+  const [phase, setPhase] = useState(null);
+  const [events, setEvents] = useState([]);
+  const [result, setResult] = useState(null);
+  const [note, setNote] = useState("");
   const [history, setHistory] = useState([]);
+  const pollRef = useRef(null);
 
   const getInitials = (name = "") => {
     return name
@@ -36,6 +39,11 @@ export default function Payments() {
     : "Guest";
 
   const orderId = (s) => String(s.id ?? s._id ?? s.orderId ?? "");
+
+  const serviceLabel = (id) => {
+    const match = services.find((s) => orderId(s) === String(id));
+    return match?.service || match?.name || match?.title || match?.serviceName || id;
+  };
 
   const authHeader = async () => {
     const token = auth.currentUser ? await auth.currentUser.getIdToken() : "";
@@ -79,7 +87,11 @@ export default function Payments() {
       } catch (e) {}
     };
     fetchMine();
-  }, [user, status]);
+  }, [user, result]);
+
+  useEffect(() => () => {
+    if (pollRef.current) clearInterval(pollRef.current);
+  }, []);
 
   const normalizePhone = (p) => {
     let v = String(p).replace(/\s+/g, "").replace(/-/g, "");
@@ -109,8 +121,12 @@ export default function Payments() {
 
   const pollStatus = (id) => {
     let tries = 0;
-    const max = 40;
-    const iv = setInterval(async () => {
+    let failures = 0;
+    const maxTries = 50;
+    const maxFailures = 4;
+
+    if (pollRef.current) clearInterval(pollRef.current);
+    pollRef.current = setInterval(async () => {
       tries++;
       try {
         const res = await fetch(`${API_BASE}/api/payments/status/${id}`, {
@@ -118,40 +134,45 @@ export default function Payments() {
             ...(await authHeader()),
           },
         });
-        if (res.ok) {
-          const data = await res.json();
-          setStatus({
+        if (!res.ok) throw new Error("status error");
+        failures = 0;
+
+        const data = await res.json();
+        setEvents(data.events || []);
+        if (data.final) {
+          clearInterval(pollRef.current);
+          setPhase(null);
+          setResult({
             status: data.status,
             mpesaReceipt: data.mpesaReceipt,
             amountPaid: data.amountPaid,
-            transactionDate: data.transactionDate,
-            failReason: data.failReason,
           });
-          if (data.status !== "PENDING" || tries >= max) {
-            clearInterval(iv);
-            setLoading(false);
-          }
-        } else {
-          if (tries >= max) {
-            clearInterval(iv);
-            setLoading(false);
-          }
+        } else if (tries >= maxTries) {
+          clearInterval(pollRef.current);
+          setPhase(null);
+          setNote(
+            "This is taking longer than expected. Check Recent Payments below in a moment — if money was deducted it will show there."
+          );
         }
       } catch (e) {
-        if (tries >= max) {
-          clearInterval(iv);
-          setLoading(false);
+        if (++failures >= maxFailures) {
+          clearInterval(pollRef.current);
+          setPhase(null);
+          setNote(
+            "We lost connection while checking your payment. If money was deducted it will appear in Recent Payments shortly; otherwise please try again."
+          );
         }
       }
-    }, 2000);
+    }, 3000);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validate() || loading) return;
-    setLoading(true);
-    setStatus(null);
-    setCheckoutId(null);
+    if (phase || !validate()) return;
+    setPhase("sending");
+    setResult(null);
+    setEvents([]);
+    setNote("");
     try {
       const res = await fetch(`${API_BASE}/api/payments/initiate`, {
         method: "POST",
@@ -168,25 +189,25 @@ export default function Payments() {
       });
       const data = await res.json();
       if (res.ok && data.checkoutRequestId) {
-        setCheckoutId(data.checkoutRequestId);
-        setStatus({ status: "PENDING" });
+        setEvents(data.events || []);
+        setPhase("awaiting");
         pollStatus(data.checkoutRequestId);
       } else {
         setErrors({ submit: data.error || "Failed to initiate payment" });
-        setLoading(false);
+        setPhase(null);
       }
     } catch (err) {
       setErrors({ submit: "Network error. Try again." });
-      setLoading(false);
+      setPhase(null);
     }
   };
 
-  const getStatusText = () => {
-    if (!status) return null;
-    if (status.status === "PENDING") return "Awaiting confirmation… (Check your phone for the M-Pesa prompt)";
-    if (status.status === "SUCCESS") return `Payment successful${status.mpesaReceipt ? ` — Receipt: ${status.mpesaReceipt}` : ""}`;
-    if (status.status === "FAILED") return `Payment failed${status.failReason ? ` — ${status.failReason}` : ""}`;
-    return status.status;
+  const formatTime = (t) => {
+    try {
+      return new Date(t).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    } catch {
+      return "";
+    }
   };
 
   const formatDt = (d) => {
@@ -261,20 +282,64 @@ export default function Payments() {
         {errors.submit && <div className="pay-submit-error">{errors.submit}</div>}
 
         <div className="pay-btn-wrap">
-          <button className="pay-btn" type="submit" disabled={loading || !services.length}>
-            {loading ? "Processing…" : "Pay"}
+          <button className="pay-btn" type="submit" disabled={!!phase || !services.length}>
+            {phase === "sending" && (
+              <>
+                <span className="pay-spin" aria-hidden="true" />
+                Sending M-Pesa prompt…
+              </>
+            )}
+            {phase === "awaiting" && (
+              <>
+                <span className="pay-spin" aria-hidden="true" />
+                Waiting for your PIN…
+              </>
+            )}
+            {!phase && "Pay"}
           </button>
         </div>
       </form>
 
       <div className="pay-status-wrap">
-        <label className="pay-label pay-status-label">Payment Status</label>
-        {status && (
-          <div className="pay-status-text">{getStatusText()}</div>
+        <label className="pay-label pay-status-label">Payment Progress</label>
+
+        {phase === "sending" && (
+          <div className="pay-status-text">Sending the payment request to Safaricom…</div>
         )}
-        <div className={`pay-bar pay-bar-1 ${status ? "pay-bar-active" : ""}`} />
-        <div className={`pay-bar pay-bar-2 ${status ? "pay-bar-active" : ""}`} />
-        <div className={`pay-bar pay-bar-3 ${status ? "pay-bar-active" : ""}`} />
+
+        {events.length > 0 && (
+          <ul className="pay-timeline">
+            {events.map((ev, i) => (
+              <li key={i} className={`pay-ev pay-ev-${ev.eventCode}`}>
+                <span className="pay-ev-dot" aria-hidden="true" />
+                <div className="pay-ev-body">
+                  <div className="pay-ev-msg">{ev.message}</div>
+                  {ev.createdAt && <div className="pay-ev-time">{formatTime(ev.createdAt)}</div>}
+                </div>
+              </li>
+            ))}
+            {phase === "awaiting" && (
+              <li className="pay-ev pay-ev-live">
+                <span className="pay-ev-dot" aria-hidden="true" />
+                <div className="pay-ev-body">
+                  <div className="pay-ev-msg">Waiting for you to enter your M-Pesa PIN…</div>
+                </div>
+              </li>
+            )}
+          </ul>
+        )}
+
+        {note && <div className="pay-note">{note}</div>}
+
+        {result && (
+          <div className={result.status === "SUCCESS" ? "pay-result pay-result-ok" : "pay-result pay-result-fail"}>
+            {result.status === "SUCCESS"
+              ? `Payment successful${result.amountPaid ? ` — KES ${result.amountPaid}` : ""}${
+                  result.mpesaReceipt ? ` · Receipt: ${result.mpesaReceipt}` : ""
+                }.`
+              : "Payment not completed. No money was deducted — you can try again."}
+          </div>
+        )}
       </div>
 
       {history.length > 0 && (
@@ -283,8 +348,11 @@ export default function Payments() {
           {history.map((h) => (
             <div className="pay-history-row" key={h.id || h.checkoutRequestId}>
               <div className="pay-h-col">
-                <div className="pay-h-main">{h.serviceId}</div>
-                <div className="pay-h-sub">{formatDt(h.transactionDate || h.updatedAt || h.createdAt)}</div>
+                <div className="pay-h-main">{serviceLabel(h.serviceId)}</div>
+                <div className="pay-h-sub">
+                  {h.mpesaReceipt ? `Receipt ${h.mpesaReceipt} · ` : ""}
+                  {formatDt(h.transactionDate || h.updatedAt || h.createdAt)}
+                </div>
               </div>
               <div className="pay-h-col pay-h-right">
                 <div className="pay-h-amt">KES {h.amountPaid || h.amount}</div>

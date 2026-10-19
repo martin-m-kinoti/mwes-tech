@@ -1,0 +1,24 @@
+# One row per Firebase user. The primary key IS the Firebase UID.
+type User @table(name: "users", key: "id") {
+  id: String!                                   # Firebase UID
+  email: String
+  createdAt: Timestamp! @default(expr: "request.time")
+}
+
+enum OrderStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+}
+
+type Order @table(name: "orders") {
+  user: User!                                   # owner (no @default here)
+  userEmail: String @default(expr: "auth.token.email")
+  service: String!
+  deliveryDuration: String!
+  deliveryDate: Timestamp!
+  comments: String! @col(dataType: "text") @default(value: "")
+  status: OrderStatus! @default(value: PENDING)
+  createdAt: Timestamp! @default(expr: "request.time")
+  updatedAt: Timestamp! @default(expr: "request.time")
+}

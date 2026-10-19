@@ -1,8 +1,6 @@
 ﻿require('dotenv').config();
 const express = require('express');
-const { Op } = require('sequelize');
 const sequelize = require('./db');
-const Order = require('./models/Order');
 const cors = require('cors');
 require('./mongo');
 const chatRoutes = require('./routes/chat');
@@ -11,6 +9,7 @@ const assistantRoutes = require('./routes/assistant');
 const paymentRoutes = require('./routes/payments');
 const { authenticate, requireRole } = require('./middleware/auth');
 const { getAuth } = require('./config/firebaseAdmin');
+const { execute, toOrderStatusEnum, normalizeOrder } = require('./config/dataconnect');
 
 const port = process.env.PORT || 5000;
 const app = express();
@@ -44,14 +43,7 @@ async function migrateSchema() {
     }
   }
 
-  // Legacy orders rows keep their old userId (now nullable); new rows use firebaseUid.
-  if (await columnExists('orders', 'userId')) {
-    await addColumnIfMissing('orders', 'firebaseUid', 'VARCHAR(255)');
-    await addColumnIfMissing('orders', 'userEmail', 'VARCHAR(255)');
-    await dropNotNull('orders', 'userId');
-  }
-
-  // Same for payments.
+  // Orders now live in Firebase Data Connect, so only payments migrate here.
   if (await columnExists('payments', 'userId')) {
     await addColumnIfMissing('payments', 'firebaseUid', 'VARCHAR(255)');
     await dropNotNull('payments', 'userId');
@@ -130,7 +122,7 @@ app.delete('/api/admin/users/:id', authenticate, requireRole('admin'), async (re
   try {
     const auth = getAuth();
     await auth.deleteUser(req.params.id);
-    await Order.destroy({ where: { firebaseUid: req.params.id } });
+    await execute('AdminDeleteUserOrders', { variables: { uid: req.params.id } });
     return res.status(200).json({ message: 'User deleted successfully.' });
   } catch (err) {
     console.error('Delete user error:', err);
@@ -144,10 +136,8 @@ app.delete('/api/admin/users/:id', authenticate, requireRole('admin'), async (re
 // Admin: list all orders
 app.get('/api/admin/orders', authenticate, requireRole('admin'), async (req, res) => {
   try {
-    const orders = await Order.findAll({
-      order: [['createdAt', 'DESC']],
-    });
-    return res.status(200).json({ orders });
+    const data = await execute('AdminListOrders');
+    return res.status(200).json({ orders: (data.orders || []).map(normalizeOrder) });
   } catch (err) {
     console.error('List orders error:', err);
     return res.status(500).json({ message: 'Could not load orders.' });
@@ -158,14 +148,19 @@ app.get('/api/admin/orders', authenticate, requireRole('admin'), async (req, res
 app.patch('/api/admin/orders/:id', authenticate, requireRole('admin'), async (req, res) => {
   try {
     const { status } = req.body;
-    const allowed = ['Pending', 'In progress', 'Completed'];
-    if (!allowed.includes(status)) {
+    const statusEnum = toOrderStatusEnum(status);
+    if (!statusEnum) {
       return res.status(400).json({ message: 'Invalid status.' });
     }
-    const order = await Order.findByPk(req.params.id);
+
+    await execute('AdminUpdateOrderStatus', {
+      variables: { id: req.params.id, status: statusEnum },
+    });
+
+    const data = await execute('AdminGetOrder', { variables: { id: req.params.id } });
+    const order = normalizeOrder((data.orders || [])[0]);
     if (!order) return res.status(404).json({ message: 'Order not found.' });
-    order.status = status;
-    await order.save();
+
     return res.status(200).json({ order });
   } catch (err) {
     console.error('Update order error:', err);
@@ -176,13 +171,13 @@ app.patch('/api/admin/orders/:id', authenticate, requireRole('admin'), async (re
 // Admin: dashboard stats
 app.get('/api/admin/stats', authenticate, requireRole('admin'), async (req, res) => {
   try {
-    const [totalOrders, pendingOrders, inProgressOrders, completedOrders] =
-      await Promise.all([
-        Order.count(),
-        Order.count({ where: { status: 'Pending' } }),
-        Order.count({ where: { status: 'In progress' } }),
-        Order.count({ where: { status: 'Completed' } }),
-      ]);
+    const data = await execute('AdminListOrders');
+    const orders = (data.orders || []).map(normalizeOrder);
+
+    const totalOrders = orders.length;
+    const pendingOrders = orders.filter((o) => o.status === 'Pending').length;
+    const inProgressOrders = orders.filter((o) => o.status === 'In progress').length;
+    const completedOrders = orders.filter((o) => o.status === 'Completed').length;
 
     let totalUsers = 0;
     try {
@@ -192,24 +187,17 @@ app.get('/api/admin/stats', authenticate, requireRole('admin'), async (req, res)
       console.error('Count users error:', err.message);
     }
 
-    const recentOrders = await Order.findAll({
-      limit: 5,
-      order: [['createdAt', 'DESC']],
-    });
+    const recentOrders = orders.slice(0, 5);
 
     const twelveMonthsAgo = new Date();
     twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 11);
     twelveMonthsAgo.setDate(1);
     twelveMonthsAgo.setHours(0, 0, 0, 0);
 
-    const monthOrders = await Order.findAll({
-      attributes: ['createdAt'],
-      where: { createdAt: { [Op.gte]: twelveMonthsAgo } },
-    });
-
     const monthly = new Array(12).fill(0);
-    monthOrders.forEach((o) => {
+    orders.forEach((o) => {
       const d = new Date(o.createdAt);
+      if (Number.isNaN(d.getTime()) || d < twelveMonthsAgo) return;
       const idx = (d.getFullYear() - twelveMonthsAgo.getFullYear()) * 12 +
         (d.getMonth() - twelveMonthsAgo.getMonth());
       if (idx >= 0 && idx < 12) monthly[idx] += 1;
