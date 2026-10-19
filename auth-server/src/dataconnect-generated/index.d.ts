@@ -32,6 +32,18 @@ export interface AdminAddPaymentEventVariables {
   message: string;
 }
 
+export interface AdminCorrectFailedPaymentSuccessData {
+  payment_updateMany: number;
+}
+
+export interface AdminCorrectFailedPaymentSuccessVariables {
+  key: string;
+  receipt?: string | null;
+  amountPaid?: number | null;
+  transactionDate?: string | null;
+  payerPhone?: string | null;
+}
+
 export interface AdminCreateOrderData {
   user_upsert: User_Key;
   order_insert: Order_Key;
@@ -443,6 +455,18 @@ export const adminFinalizePaymentSuccessRef: AdminFinalizePaymentSuccessRef;
 
 export function adminFinalizePaymentSuccess(vars: AdminFinalizePaymentSuccessVariables): MutationPromise<AdminFinalizePaymentSuccessData, AdminFinalizePaymentSuccessVariables>;
 export function adminFinalizePaymentSuccess(dc: DataConnect, vars: AdminFinalizePaymentSuccessVariables): MutationPromise<AdminFinalizePaymentSuccessData, AdminFinalizePaymentSuccessVariables>;
+
+interface AdminCorrectFailedPaymentSuccessRef {
+  /* Allow users to create refs without passing in DataConnect */
+  (vars: AdminCorrectFailedPaymentSuccessVariables): MutationRef<AdminCorrectFailedPaymentSuccessData, AdminCorrectFailedPaymentSuccessVariables>;
+  /* Allow users to pass in custom DataConnect instances */
+  (dc: DataConnect, vars: AdminCorrectFailedPaymentSuccessVariables): MutationRef<AdminCorrectFailedPaymentSuccessData, AdminCorrectFailedPaymentSuccessVariables>;
+  operationName: string;
+}
+export const adminCorrectFailedPaymentSuccessRef: AdminCorrectFailedPaymentSuccessRef;
+
+export function adminCorrectFailedPaymentSuccess(vars: AdminCorrectFailedPaymentSuccessVariables): MutationPromise<AdminCorrectFailedPaymentSuccessData, AdminCorrectFailedPaymentSuccessVariables>;
+export function adminCorrectFailedPaymentSuccess(dc: DataConnect, vars: AdminCorrectFailedPaymentSuccessVariables): MutationPromise<AdminCorrectFailedPaymentSuccessData, AdminCorrectFailedPaymentSuccessVariables>;
 
 interface AdminFinalizePaymentFailureRef {
   /* Allow users to create refs without passing in DataConnect */

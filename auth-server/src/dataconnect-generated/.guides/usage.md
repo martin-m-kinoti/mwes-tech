@@ -14,7 +14,7 @@ If a user is not using a supported framework, they can use the generated SDK dir
 Here's an example of how to use it with the first 5 operations:
 
 ```js
-import { upsertCurrentUser, createOrder, updateMyOrder, adminCreateOrder, deleteMyOrder, adminDeleteUserData, createMyPayment, adminAddPaymentEvent, adminFinalizePaymentSuccess, adminFinalizePaymentFailure } from '@dataconnect/generated';
+import { upsertCurrentUser, createOrder, updateMyOrder, adminCreateOrder, deleteMyOrder, adminDeleteUserData, createMyPayment, adminAddPaymentEvent, adminFinalizePaymentSuccess, adminCorrectFailedPaymentSuccess } from '@dataconnect/generated';
 
 
 // Operation UpsertCurrentUser: 
@@ -44,8 +44,8 @@ const { data } = await AdminAddPaymentEvent(dataConnect, adminAddPaymentEventVar
 // Operation AdminFinalizePaymentSuccess:  For variables, look at type AdminFinalizePaymentSuccessVars in ../index.d.ts
 const { data } = await AdminFinalizePaymentSuccess(dataConnect, adminFinalizePaymentSuccessVars);
 
-// Operation AdminFinalizePaymentFailure:  For variables, look at type AdminFinalizePaymentFailureVars in ../index.d.ts
-const { data } = await AdminFinalizePaymentFailure(dataConnect, adminFinalizePaymentFailureVars);
+// Operation AdminCorrectFailedPaymentSuccess:  For variables, look at type AdminCorrectFailedPaymentSuccessVars in ../index.d.ts
+const { data } = await AdminCorrectFailedPaymentSuccess(dataConnect, adminCorrectFailedPaymentSuccessVars);
 
 
 ```

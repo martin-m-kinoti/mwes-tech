@@ -125,6 +125,18 @@ export function adminFinalizePaymentSuccess(dcOrVars, vars) {
   return executeMutation(adminFinalizePaymentSuccessRef(dcInstance, inputVars));
 }
 
+export const adminCorrectFailedPaymentSuccessRef = (dcOrVars, vars) => {
+  const { dc: dcInstance, vars: inputVars} = validateArgs(connectorConfig, dcOrVars, vars, true);
+  dcInstance._useGeneratedSdk();
+  return mutationRef(dcInstance, 'AdminCorrectFailedPaymentSuccess', inputVars);
+}
+adminCorrectFailedPaymentSuccessRef.operationName = 'AdminCorrectFailedPaymentSuccess';
+
+export function adminCorrectFailedPaymentSuccess(dcOrVars, vars) {
+  const { dc: dcInstance, vars: inputVars } = validateArgs(connectorConfig, dcOrVars, vars, true);
+  return executeMutation(adminCorrectFailedPaymentSuccessRef(dcInstance, inputVars));
+}
+
 export const adminFinalizePaymentFailureRef = (dcOrVars, vars) => {
   const { dc: dcInstance, vars: inputVars} = validateArgs(connectorConfig, dcOrVars, vars, true);
   dcInstance._useGeneratedSdk();

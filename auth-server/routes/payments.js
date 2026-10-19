@@ -38,6 +38,32 @@ function outcomeEvent(resultCode, resultDesc, extra = {}) {
 
 const isIntegerCode = (rc) => /^\d+$/.test(String(rc));
 
+// Daraja's STK query reports non-terminal states (e.g. "The transaction is
+// still under processing" right after the user enters their PIN) as failures.
+// Those must stay PENDING and let the callback or a later poll decide.
+const NON_TERMINAL_PATTERN = /still under processing|being processed|not found|does not exist/i;
+
+const isNonTerminalDesc = (desc) => NON_TERMINAL_PATTERN.test(String(desc || ''));
+
+// Applies a SUCCESS callback: claims the record while still PENDING, or
+// corrects a record that an early status poll wrongly marked FAILED. Returns
+// true when this call performed the transition (false for duplicates).
+async function finalizeSuccess(key, items) {
+  const variables = {
+    key,
+    receipt: items.MpesaReceiptNumber ?? null,
+    amountPaid: items.Amount ?? null,
+    transactionDate: items.TransactionDate != null ? String(items.TransactionDate) : null,
+    payerPhone: items.PhoneNumber != null ? String(items.PhoneNumber) : null,
+  };
+
+  const primary = await execute('AdminFinalizePaymentSuccess', { variables });
+  if (finalizeCount(primary) > 0) return true;
+
+  const correction = await execute('AdminCorrectFailedPaymentSuccess', { variables });
+  return finalizeCount(correction) > 0;
+}
+
 async function logEvent(paymentId, eventCode, message) {
   try {
     await execute('AdminAddPaymentEvent', {
@@ -134,44 +160,34 @@ router.post('/callback', async (req, res) => {
       return res.json({ ResultCode: 0, ResultDesc: 'Accepted' });
     }
 
-    if (record.status === 'PENDING') {
-      if (ResultCode === 0) {
-        const items = {};
-        (CallbackMetadata?.Item || []).forEach((i) => {
-          items[i.Name] = i.Value;
+    if (ResultCode === 0) {
+      // Success is authoritative: claim a PENDING record, or correct one that
+      // an early status poll wrongly marked FAILED.
+      const items = {};
+      (CallbackMetadata?.Item || []).forEach((i) => {
+        items[i.Name] = i.Value;
+      });
+
+      const finalized = await finalizeSuccess(CheckoutRequestID, items);
+      if (finalized) {
+        const ev = outcomeEvent(0, null, {
+          receipt: items.MpesaReceiptNumber,
+          amount: items.Amount,
         });
-
-        const updated = await execute('AdminFinalizePaymentSuccess', {
-          variables: {
-            key: CheckoutRequestID,
-            receipt: items.MpesaReceiptNumber ?? null,
-            amountPaid: items.Amount ?? null,
-            transactionDate: items.TransactionDate != null ? String(items.TransactionDate) : null,
-            payerPhone: items.PhoneNumber != null ? String(items.PhoneNumber) : null,
-          },
-        });
-
-        if (finalizeCount(updated) > 0) {
-          const ev = outcomeEvent(0, null, {
-            receipt: items.MpesaReceiptNumber,
-            amount: items.Amount,
-          });
-          await logEvent(record.id, ev.code, ev.message);
-        }
-
+        await logEvent(record.id, ev.code, ev.message);
         console.log(`Payment SUCCESS for ${CheckoutRequestID}:`, items);
-      } else {
-        const updated = await execute('AdminFinalizePaymentFailure', {
-          variables: { key: CheckoutRequestID, failReason: ResultDesc ?? null },
-        });
-
-        if (finalizeCount(updated) > 0) {
-          const ev = outcomeEvent(ResultCode, ResultDesc);
-          await logEvent(record.id, ev.code, ev.message);
-        }
-
-        console.log(`Payment FAILED for ${CheckoutRequestID}: ${ResultDesc}`);
       }
+    } else if (record.status === 'PENDING') {
+      const updated = await execute('AdminFinalizePaymentFailure', {
+        variables: { key: CheckoutRequestID, failReason: ResultDesc ?? null },
+      });
+
+      if (finalizeCount(updated) > 0) {
+        const ev = outcomeEvent(ResultCode, ResultDesc);
+        await logEvent(record.id, ev.code, ev.message);
+      }
+
+      console.log(`Payment FAILED for ${CheckoutRequestID}: ${ResultDesc}`);
     }
 
     return res.json({ ResultCode: 0, ResultDesc: 'Accepted' });
@@ -205,7 +221,10 @@ router.get('/status/:checkoutRequestId', authenticate, async (req, res) => {
           if (finalizeCount(updated) > 0) {
             await logEvent(record.id, 'success', 'Payment confirmed. Thank you!');
           }
-        } else if (isIntegerCode(queryResult.ResultCode)) {
+        } else if (
+          isIntegerCode(queryResult.ResultCode) &&
+          !isNonTerminalDesc(queryResult.ResultDesc)
+        ) {
           const failReason = queryResult.ResultDesc || 'Payment not completed';
           const updated = await execute('AdminFinalizePaymentFailure', {
             variables: { key: req.params.checkoutRequestId, failReason },

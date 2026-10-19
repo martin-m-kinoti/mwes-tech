@@ -124,6 +124,29 @@ mutation AdminFinalizePaymentSuccess(
   )
 }
 
+# Server-only: correction path — a SUCCESS callback arriving after the record
+# was already marked FAILED (e.g. by an early status-poll misread). A success
+# callback is authoritative because money has actually moved.
+mutation AdminCorrectFailedPaymentSuccess(
+  $key: String!
+  $receipt: String
+  $amountPaid: Float
+  $transactionDate: String
+  $payerPhone: String
+) @auth(level: NO_ACCESS) {
+  payment_updateMany(
+    where: { checkoutRequestId: { eq: $key }, status: { eq: FAILED } }
+    data: {
+      status: SUCCESS
+      mpesaReceipt: $receipt
+      amountPaid: $amountPaid
+      transactionDate: $transactionDate
+      payerPhone: $payerPhone
+      updatedAt_expr: "request.time"
+    }
+  )
+}
+
 mutation AdminFinalizePaymentFailure($key: String!, $failReason: String)
 @auth(level: NO_ACCESS) {
   payment_updateMany(

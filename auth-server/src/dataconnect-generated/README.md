@@ -28,6 +28,7 @@ This README will guide you through the process of using the generated JavaScript
   - [*CreateMyPayment*](#createmypayment)
   - [*AdminAddPaymentEvent*](#adminaddpaymentevent)
   - [*AdminFinalizePaymentSuccess*](#adminfinalizepaymentsuccess)
+  - [*AdminCorrectFailedPaymentSuccess*](#admincorrectfailedpaymentsuccess)
   - [*AdminFinalizePaymentFailure*](#adminfinalizepaymentfailure)
   - [*AdminUpdateOrderStatus*](#adminupdateorderstatus)
   - [*AdminDeleteOrder*](#admindeleteorder)
@@ -2255,6 +2256,127 @@ const ref = adminFinalizePaymentSuccessRef({ key: ..., receipt: ..., amountPaid:
 // You can also pass in a `DataConnect` instance to the `MutationRef` function.
 const dataConnect = getDataConnect(connectorConfig);
 const ref = adminFinalizePaymentSuccessRef(dataConnect, adminFinalizePaymentSuccessVars);
+
+// Call `executeMutation()` on the reference to execute the mutation.
+// You can use the `await` keyword to wait for the promise to resolve.
+const { data } = await executeMutation(ref);
+
+console.log(data.payment_updateMany);
+
+// Or, you can use the `Promise` API.
+executeMutation(ref).then((response) => {
+  const data = response.data;
+  console.log(data.payment_updateMany);
+});
+```
+
+## AdminCorrectFailedPaymentSuccess
+You can execute the `AdminCorrectFailedPaymentSuccess` mutation using the following action shortcut function, or by calling `executeMutation()` after calling the following `MutationRef` function, both of which are defined in [dataconnect-generated/index.d.ts](./index.d.ts):
+```typescript
+adminCorrectFailedPaymentSuccess(vars: AdminCorrectFailedPaymentSuccessVariables): MutationPromise<AdminCorrectFailedPaymentSuccessData, AdminCorrectFailedPaymentSuccessVariables>;
+
+interface AdminCorrectFailedPaymentSuccessRef {
+  ...
+  /* Allow users to create refs without passing in DataConnect */
+  (vars: AdminCorrectFailedPaymentSuccessVariables): MutationRef<AdminCorrectFailedPaymentSuccessData, AdminCorrectFailedPaymentSuccessVariables>;
+}
+export const adminCorrectFailedPaymentSuccessRef: AdminCorrectFailedPaymentSuccessRef;
+```
+You can also pass in a `DataConnect` instance to the action shortcut function or `MutationRef` function.
+```typescript
+adminCorrectFailedPaymentSuccess(dc: DataConnect, vars: AdminCorrectFailedPaymentSuccessVariables): MutationPromise<AdminCorrectFailedPaymentSuccessData, AdminCorrectFailedPaymentSuccessVariables>;
+
+interface AdminCorrectFailedPaymentSuccessRef {
+  ...
+  (dc: DataConnect, vars: AdminCorrectFailedPaymentSuccessVariables): MutationRef<AdminCorrectFailedPaymentSuccessData, AdminCorrectFailedPaymentSuccessVariables>;
+}
+export const adminCorrectFailedPaymentSuccessRef: AdminCorrectFailedPaymentSuccessRef;
+```
+
+If you need the name of the operation without creating a ref, you can retrieve the operation name by calling the `operationName` property on the adminCorrectFailedPaymentSuccessRef:
+```typescript
+const name = adminCorrectFailedPaymentSuccessRef.operationName;
+console.log(name);
+```
+
+### Variables
+The `AdminCorrectFailedPaymentSuccess` mutation requires an argument of type `AdminCorrectFailedPaymentSuccessVariables`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
+
+```typescript
+export interface AdminCorrectFailedPaymentSuccessVariables {
+  key: string;
+  receipt?: string | null;
+  amountPaid?: number | null;
+  transactionDate?: string | null;
+  payerPhone?: string | null;
+}
+```
+### Return Type
+Recall that executing the `AdminCorrectFailedPaymentSuccess` mutation returns a `MutationPromise` that resolves to an object with a `data` property.
+
+The `data` property is an object of type `AdminCorrectFailedPaymentSuccessData`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
+```typescript
+export interface AdminCorrectFailedPaymentSuccessData {
+  payment_updateMany: number;
+}
+```
+### Using `AdminCorrectFailedPaymentSuccess`'s action shortcut function
+
+```typescript
+import { getDataConnect } from 'firebase/data-connect';
+import { connectorConfig, adminCorrectFailedPaymentSuccess, AdminCorrectFailedPaymentSuccessVariables } from '@dataconnect/generated';
+
+// The `AdminCorrectFailedPaymentSuccess` mutation requires an argument of type `AdminCorrectFailedPaymentSuccessVariables`:
+const adminCorrectFailedPaymentSuccessVars: AdminCorrectFailedPaymentSuccessVariables = {
+  key: ..., 
+  receipt: ..., // optional
+  amountPaid: ..., // optional
+  transactionDate: ..., // optional
+  payerPhone: ..., // optional
+};
+
+// Call the `adminCorrectFailedPaymentSuccess()` function to execute the mutation.
+// You can use the `await` keyword to wait for the promise to resolve.
+const { data } = await adminCorrectFailedPaymentSuccess(adminCorrectFailedPaymentSuccessVars);
+// Variables can be defined inline as well.
+const { data } = await adminCorrectFailedPaymentSuccess({ key: ..., receipt: ..., amountPaid: ..., transactionDate: ..., payerPhone: ..., });
+
+// You can also pass in a `DataConnect` instance to the action shortcut function.
+const dataConnect = getDataConnect(connectorConfig);
+const { data } = await adminCorrectFailedPaymentSuccess(dataConnect, adminCorrectFailedPaymentSuccessVars);
+
+console.log(data.payment_updateMany);
+
+// Or, you can use the `Promise` API.
+adminCorrectFailedPaymentSuccess(adminCorrectFailedPaymentSuccessVars).then((response) => {
+  const data = response.data;
+  console.log(data.payment_updateMany);
+});
+```
+
+### Using `AdminCorrectFailedPaymentSuccess`'s `MutationRef` function
+
+```typescript
+import { getDataConnect, executeMutation } from 'firebase/data-connect';
+import { connectorConfig, adminCorrectFailedPaymentSuccessRef, AdminCorrectFailedPaymentSuccessVariables } from '@dataconnect/generated';
+
+// The `AdminCorrectFailedPaymentSuccess` mutation requires an argument of type `AdminCorrectFailedPaymentSuccessVariables`:
+const adminCorrectFailedPaymentSuccessVars: AdminCorrectFailedPaymentSuccessVariables = {
+  key: ..., 
+  receipt: ..., // optional
+  amountPaid: ..., // optional
+  transactionDate: ..., // optional
+  payerPhone: ..., // optional
+};
+
+// Call the `adminCorrectFailedPaymentSuccessRef()` function to get a reference to the mutation.
+const ref = adminCorrectFailedPaymentSuccessRef(adminCorrectFailedPaymentSuccessVars);
+// Variables can be defined inline as well.
+const ref = adminCorrectFailedPaymentSuccessRef({ key: ..., receipt: ..., amountPaid: ..., transactionDate: ..., payerPhone: ..., });
+
+// You can also pass in a `DataConnect` instance to the `MutationRef` function.
+const dataConnect = getDataConnect(connectorConfig);
+const ref = adminCorrectFailedPaymentSuccessRef(dataConnect, adminCorrectFailedPaymentSuccessVars);
 
 // Call `executeMutation()` on the reference to execute the mutation.
 // You can use the `await` keyword to wait for the promise to resolve.
