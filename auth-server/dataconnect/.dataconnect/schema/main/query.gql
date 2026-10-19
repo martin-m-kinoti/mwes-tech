@@ -19,6 +19,44 @@ extend type Query {
     first: Order_FirstRow
   ): Order @fdc_generated(from: "Order", purpose: QUERY_SINGLE)
   """
+  ✨ Look up a single `Payment` based on `id`, `key` or `first` and return selected fields (or `null` if not found).
+  """
+  payment(
+    """
+    The unique ID of the object.
+    """
+    id: UUID
+
+    """
+    The key used to identify the object.
+    """
+    key: Payment_Key
+
+    """
+    Fetch the first row based on the filters and ordering.
+    """
+    first: Payment_FirstRow
+  ): Payment @fdc_generated(from: "Payment", purpose: QUERY_SINGLE)
+  """
+  ✨ Look up a single `PaymentEvent` based on `id`, `key` or `first` and return selected fields (or `null` if not found).
+  """
+  paymentEvent(
+    """
+    The unique ID of the object.
+    """
+    id: UUID
+
+    """
+    The key used to identify the object.
+    """
+    key: PaymentEvent_Key
+
+    """
+    Fetch the first row based on the filters and ordering.
+    """
+    first: PaymentEvent_FirstRow
+  ): PaymentEvent @fdc_generated(from: "PaymentEvent", purpose: QUERY_SINGLE)
+  """
   ✨ Look up a single `User` based on `id`, `key` or `first` and return selected fields (or `null` if not found).
   """
   user(
@@ -76,6 +114,74 @@ extend type Query {
     """
     having: Order_Having
   ): [Order!]! @fdc_generated(from: "Order", purpose: QUERY_MULTIPLE)
+  """
+  ✨ List `Payment` objects in the table and return selected fields, optionally filtered by `where` conditions
+  """
+  payments(
+    """
+    Filter condition to narrow down the query results.
+    """
+    where: Payment_Filter
+
+    """
+    Order the query results by specific fields.
+    """
+    orderBy: [Payment_Order!]
+
+    """
+    Number of rows to skip before starting to return the results.
+    """
+    offset: Int
+
+    """
+    Maximum number of rows to return (defaults to 100 rows).
+    """
+    limit: Int = 100
+
+    """
+    Set to true to return distinct results.
+    """
+    distinct: Boolean = false
+
+    """
+    Filter condition to apply to the groups of aggregate queries.
+    """
+    having: Payment_Having
+  ): [Payment!]! @fdc_generated(from: "Payment", purpose: QUERY_MULTIPLE)
+  """
+  ✨ List `PaymentEvent` objects in the table and return selected fields, optionally filtered by `where` conditions
+  """
+  paymentEvents(
+    """
+    Filter condition to narrow down the query results.
+    """
+    where: PaymentEvent_Filter
+
+    """
+    Order the query results by specific fields.
+    """
+    orderBy: [PaymentEvent_Order!]
+
+    """
+    Number of rows to skip before starting to return the results.
+    """
+    offset: Int
+
+    """
+    Maximum number of rows to return (defaults to 100 rows).
+    """
+    limit: Int = 100
+
+    """
+    Set to true to return distinct results.
+    """
+    distinct: Boolean = false
+
+    """
+    Filter condition to apply to the groups of aggregate queries.
+    """
+    having: PaymentEvent_Having
+  ): [PaymentEvent!]! @fdc_generated(from: "PaymentEvent", purpose: QUERY_MULTIPLE)
   """
   ✨ List `User` objects in the table and return selected fields, optionally filtered by `where` conditions
   """

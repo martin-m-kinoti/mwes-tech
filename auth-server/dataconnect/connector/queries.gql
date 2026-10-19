@@ -45,3 +45,52 @@ query AdminGetOrder($id: UUID!) @auth(level: NO_ACCESS) {
     user { id email }
   }
 }
+
+query ListMyPayments @auth(level: USER) {
+  payments(
+    where: { user: { id: { eq_expr: "auth.uid" } } }
+    orderBy: { createdAt: DESC }
+  ) {
+    id checkoutRequestId serviceId phone amount status
+    mpesaReceipt amountPaid transactionDate failReason
+    createdAt updatedAt
+  }
+}
+
+query GetMyPaymentByKey($key: String!) @auth(level: USER) {
+  payments(
+    where: { checkoutRequestId: { eq: $key }, user: { id: { eq_expr: "auth.uid" } } }
+    limit: 1
+  ) {
+    id checkoutRequestId serviceId phone amount status
+    mpesaReceipt amountPaid transactionDate failReason
+    createdAt updatedAt
+  }
+}
+
+# Server-only: find a payment by its Daraja checkout id (callback handler)
+query AdminGetPaymentByKey($key: String!) @auth(level: NO_ACCESS) {
+  payments(where: { checkoutRequestId: { eq: $key } }, limit: 1) {
+    id checkoutRequestId status
+  }
+}
+
+# Server-only: timeline events for one payment, oldest first
+query AdminListPaymentEvents($paymentId: UUID!) @auth(level: NO_ACCESS) {
+  paymentEvents(
+    where: { payment: { id: { eq: $paymentId } } }
+    orderBy: { createdAt: ASC }
+  ) {
+    eventCode message createdAt
+  }
+}
+
+# Server-only: all payments, for the admin dashboard
+query AdminListPayments @auth(level: NO_ACCESS) {
+  payments(orderBy: { createdAt: DESC }) {
+    id checkoutRequestId serviceId phone amount status
+    mpesaReceipt amountPaid transactionDate payerPhone failReason
+    createdAt updatedAt
+    user { id email }
+  }
+}

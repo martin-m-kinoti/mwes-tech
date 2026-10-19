@@ -16,43 +16,10 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// One-off, idempotent migration from the old Sequelize User FK (userId) to the
-// Firebase UID columns. Safe to run on every boot.
-async function migrateSchema() {
-  const qi = sequelize.getQueryInterface();
-
-  async function columnExists(table, column) {
-    try {
-      const description = await qi.describeTable(table);
-      return Boolean(description[column]);
-    } catch {
-      return false;
-    }
-  }
-
-  async function addColumnIfMissing(table, column, definition) {
-    if (await columnExists(table, column)) return;
-    await sequelize.query(`ALTER TABLE "${table}" ADD COLUMN "${column}" ${definition};`);
-  }
-
-  async function dropNotNull(table, column) {
-    try {
-      await sequelize.query(`ALTER TABLE "${table}" ALTER COLUMN "${column}" DROP NOT NULL;`);
-    } catch {
-      // column may not exist on a fresh database
-    }
-  }
-
-  // Orders now live in Firebase Data Connect, so only payments migrate here.
-  if (await columnExists('payments', 'userId')) {
-    await addColumnIfMissing('payments', 'firebaseUid', 'VARCHAR(255)');
-    await dropNotNull('payments', 'userId');
-  }
-}
-
+// One-off, idempotent cleanups on boot. Orders and payments live in Firebase
+// Data Connect, so nothing migrates locally anymore.
 sequelize
   .authenticate()
-  .then(() => migrateSchema())
   .then(() => sequelize.sync())
   .then(() => console.log('Connected to the database'))
   .catch((err) => console.error('Database connection error:', err));
@@ -122,7 +89,7 @@ app.delete('/api/admin/users/:id', authenticate, requireRole('admin'), async (re
   try {
     const auth = getAuth();
     await auth.deleteUser(req.params.id);
-    await execute('AdminDeleteUserOrders', { variables: { uid: req.params.id } });
+    await execute('AdminDeleteUserData', { variables: { uid: req.params.id } });
     return res.status(200).json({ message: 'User deleted successfully.' });
   } catch (err) {
     console.error('Delete user error:', err);
