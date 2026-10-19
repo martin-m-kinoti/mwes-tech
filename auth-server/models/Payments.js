@@ -9,8 +9,8 @@ const Payments = sequelize.define(
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
     },
-    userId: {
-      type: DataTypes.INTEGER,
+    firebaseUid: {
+      type: DataTypes.STRING,
       allowNull: true,
     },
     checkoutRequestId: {

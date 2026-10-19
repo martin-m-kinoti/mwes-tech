@@ -93,8 +93,9 @@ pay-input:focus {
 }
 
 .pay-btn {
-  width: 158px;
+  min-width: 158px;
   height: 44px;
+  padding: 0 16px;
   border-radius: 4px;
   border: 1px solid #a9c0f5;
   background: #bfd3fb;
@@ -131,30 +132,107 @@ pay-input:focus {
   min-height: 18px;
 }
 
-.pay-bar {
-  height: 22px;
-  border-radius: 4px;
-  background: #e6ecf7;
-  border: 1px solid #c7d4ef;
-  width: 100%;
-  transition: background 0.3s ease, border-color 0.3s ease;
+.pay-spin {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(0, 0, 0, 0.25);
+  border-top-color: #000;
+  border-radius: 50%;
+  display: inline-block;
+  vertical-align: -2px;
+  margin-right: 8px;
+  animation: pay-rotate 0.8s linear infinite;
 }
 
-.pay-bar-active {
+@keyframes pay-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* STK push event timeline */
+.pay-timeline {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+}
+
+.pay-ev {
+  position: relative;
+  margin-left: 6px;
+  padding: 6px 0 6px 20px;
+  border-left: 2px solid #dce6f8;
+}
+
+.pay-ev:last-child {
+  border-left-color: transparent;
+}
+
+.pay-ev-dot {
+  position: absolute;
+  left: -6px;
+  top: 10px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #2e7d32;
+}
+
+.pay-ev-cancelled .pay-ev-dot,
+.pay-ev-timeout .pay-ev-dot,
+.pay-ev-failed .pay-ev-dot {
+  background: #d32f2f;
+}
+
+.pay-ev-live .pay-ev-dot {
   background: #bfd3fb;
-  border-color: #a9c0f5;
+  animation: pay-pulse 1.2s ease-in-out infinite;
 }
 
-.pay-bar-1 {
-  max-width: 215px;
+@keyframes pay-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(169, 192, 245, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(169, 192, 245, 0);
+  }
 }
 
-.pay-bar-2 {
-  max-width: 151px;
+.pay-ev-msg {
+  font-size: 12px;
+  color: var(--steel-deep, #254f73);
 }
 
-.pay-bar-3 {
-  max-width: 106px;
+.pay-ev-time {
+  font-size: 10px;
+  color: #6b7a99;
+  margin-top: 2px;
+}
+
+.pay-note {
+  margin-top: 8px;
+  font-size: 11px;
+  color: #b77b1f;
+}
+
+.pay-result {
+  margin-top: 8px;
+  padding: 12px 14px;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+.pay-result-ok {
+  background: #e3f2e6;
+  border: 1px solid #bfe0c5;
+  color: #2e7d32;
+}
+
+.pay-result-fail {
+  background: #fdecea;
+  border: 1px solid #f5c6c1;
+  color: #c62828;
 }
 
 .pay-history {

@@ -1,0 +1,47 @@
+query ListMyOrders @auth(level: USER) {
+  orders(
+    where: { user: { id: { eq_expr: "auth.uid" } } }
+    orderBy: { createdAt: DESC }
+  ) {
+    id service deliveryDuration deliveryDate comments status
+    userEmail createdAt updatedAt
+  }
+}
+
+query GetMyOrder($id: UUID!) @auth(level: USER) {
+  orders(
+    where: { id: { eq: $id }, user: { id: { eq_expr: "auth.uid" } } }
+    limit: 1
+  ) {
+    id service deliveryDuration deliveryDate comments status
+    userEmail createdAt updatedAt
+  }
+}
+
+# Server-only: all orders, for an admin dashboard
+query AdminListOrders @auth(level: NO_ACCESS) {
+  orders(orderBy: { createdAt: DESC }) {
+    id service deliveryDuration deliveryDate comments status
+    userEmail createdAt updatedAt
+    user { id email }
+  }
+}
+
+query AdminListOrdersByUser($userId: String!) @auth(level: NO_ACCESS) {
+  orders(
+    where: { user: { id: { eq: $userId } } }
+    orderBy: { createdAt: DESC }
+  ) {
+    id service deliveryDuration deliveryDate comments status
+    userEmail createdAt updatedAt
+  }
+}
+
+# Server-only: fetch a single order regardless of owner
+query AdminGetOrder($id: UUID!) @auth(level: NO_ACCESS) {
+  orders(where: { id: { eq: $id } }, limit: 1) {
+    id service deliveryDuration deliveryDate comments status
+    userEmail createdAt updatedAt
+    user { id email }
+  }
+}

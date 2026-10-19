@@ -1,0 +1,87 @@
+mutation UpsertCurrentUser @auth(level: USER) {
+  user_upsert(data: { id_expr: "auth.uid", email_expr: "auth.token.email" })
+}
+
+mutation CreateOrder(
+  $service: String!
+  $deliveryDuration: String!
+  $deliveryDate: Timestamp!
+  $comments: String
+) @auth(level: USER) {
+  order_insert(
+    data: {
+      userId_expr: "auth.uid"
+      service: $service
+      deliveryDuration: $deliveryDuration
+      deliveryDate: $deliveryDate
+      comments: $comments
+    }
+  )
+}
+
+mutation UpdateMyOrder(
+  $id: UUID!
+  $service: String
+  $deliveryDuration: String
+  $deliveryDate: Timestamp
+  $comments: String
+) @auth(level: USER) {
+  order_updateMany(
+    where: { id: { eq: $id }, user: { id: { eq_expr: "auth.uid" } } }
+    data: {
+      service: $service
+      deliveryDuration: $deliveryDuration
+      deliveryDate: $deliveryDate
+      comments: $comments
+      updatedAt_expr: "request.time"
+    }
+  )
+}
+
+mutation AdminCreateOrder(
+  $userId: String!
+  $userEmail: String
+  $service: String!
+  $deliveryDuration: String!
+  $deliveryDate: Timestamp!
+  $comments: String
+) @auth(level: NO_ACCESS) {
+  user_upsert(data: { id: $userId, email: $userEmail })
+  order_insert(
+    data: {
+      userId: $userId
+      userEmail: $userEmail
+      service: $service
+      deliveryDuration: $deliveryDuration
+      deliveryDate: $deliveryDate
+      comments: $comments
+    }
+  )
+}
+
+mutation DeleteMyOrder($id: UUID!) @auth(level: USER) {
+  order_deleteMany(
+    where: { id: { eq: $id }, user: { id: { eq_expr: "auth.uid" } } }
+  )
+}
+
+# Server-only: remove every order (and the user row) for a deleted account.
+# Orders go first so no row references the deleted user.
+mutation AdminDeleteUserOrders($uid: String!) @auth(level: NO_ACCESS) {
+  order_deleteMany(where: { user: { id: { eq: $uid } } })
+  user_deleteMany(where: { id: { eq: $uid } })
+}
+
+# Server-only: change status (customers can't call this)
+mutation AdminUpdateOrderStatus($id: UUID!, $status: OrderStatus!)
+@auth(level: NO_ACCESS) {
+  order_update(
+    id: $id
+    data: { status: $status, updatedAt_expr: "request.time" }
+  )
+}
+
+# Server-only: delete any order
+mutation AdminDeleteOrder($id: UUID!) @auth(level: NO_ACCESS) {
+  order_delete(id: $id)
+}
