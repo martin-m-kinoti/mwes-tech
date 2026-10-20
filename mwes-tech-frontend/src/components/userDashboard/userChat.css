@@ -168,8 +168,10 @@
 }
 
 @media (max-width: 640px) {
+  /* Bound the chat to the viewport so only the thread scrolls. */
   .u-chat {
-    height: auto;
-    min-height: 76vh;
+    height: calc(100vh - 110px);
+    height: calc(100dvh - 110px);
+    min-height: 0;
   }
 }

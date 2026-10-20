@@ -158,14 +158,39 @@
 .chat-window {
   flex: 1;
   min-width: 0;
+  /* Allows the thread to shrink inside the fixed-height chat on mobile. */
+  min-height: 0;
   display: flex;
   flex-direction: column;
   background: var(--surface);
 }
 
 .chat-window-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   padding: 16px 20px;
   border-bottom: 1px solid var(--border);
+}
+
+/* Back to the conversation list; only shown on narrow screens. */
+.chat-back {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s ease;
+}
+
+.chat-back:hover {
+  background: var(--blue-fill);
 }
 
 .chat-window-name {
@@ -312,15 +337,43 @@
 }
 
 @media (max-width: 900px) {
+  /* Bound the chat to the viewport so only the list or thread scrolls. */
   .chat {
-    height: auto;
+    height: calc(100vh - 140px);
+    height: calc(100dvh - 140px);
+    min-height: 0;
     flex-direction: column;
   }
 
   .chat-list {
     width: 100%;
-    max-height: 260px;
+    flex: 1;
+    max-height: none;
     border-right: none;
-    border-bottom: 1px solid var(--blue-border);
+  }
+
+  /* Master-detail: the conversation list fills the pane until a chat is
+     opened, then the conversation takes over the full pane. */
+  .chat-window {
+    display: none;
+  }
+
+  .chat.chat-open .chat-list {
+    display: none;
+  }
+
+  .chat.chat-open .chat-window {
+    display: flex;
+  }
+
+  .chat-back {
+    display: inline-flex;
+  }
+}
+
+@media (max-width: 640px) {
+  .chat {
+    height: calc(100vh - 110px);
+    height: calc(100dvh - 110px);
   }
 }

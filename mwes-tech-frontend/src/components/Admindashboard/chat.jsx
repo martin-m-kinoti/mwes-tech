@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Send } from "lucide-react";
+import { ArrowLeft, Send } from "lucide-react";
 import { api } from "../../api";
 import { useAuth } from "../../AuthContext";
 import "./chat.css";
@@ -49,6 +49,7 @@ function Chat() {
 
   const [conversations, setConversations] = useState([]);
   const [activeId, setActiveId] = useState("");
+  const [chatOpen, setChatOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [draft, setDraft] = useState("");
   const [loading, setLoading] = useState(true);
@@ -102,6 +103,7 @@ function Chat() {
   }, [activeId, conversations, me.id]);
 
   const handleSelect = (conversationId) => {
+    setChatOpen(true);
     if (conversationId === activeId) return;
     setActiveId(conversationId);
     setMessages([]);
@@ -151,7 +153,7 @@ function Chat() {
   );
 
   return (
-    <div className="chat">
+    <div className={`chat${chatOpen ? " chat-open" : ""}`}>
       <aside className="chat-list">
         <header className="chat-list-head">
           <h2 className="chat-list-title">Chats</h2>
@@ -199,6 +201,14 @@ function Chat() {
 
       <section className="chat-window">
         <header className="chat-window-head">
+          <button
+            type="button"
+            className="chat-back"
+            onClick={() => setChatOpen(false)}
+            aria-label="Back to chats"
+          >
+            <ArrowLeft size={18} />
+          </button>
           <h3 className="chat-window-name">{activeName || "Select a chat"}</h3>
         </header>
 

@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Send } from "lucide-react";
 import { api } from "../../api";
+import { BRAND } from "../../config";
 import { useAuth } from "../../AuthContext";
 import "./userChat.css";
 
@@ -130,7 +131,7 @@ function UserChat() {
               className={`u-msg${outgoing ? " outgoing" : " incoming"}`}
             >
               <span className="u-msg-sender">
-                {outgoing ? "You" : msg.senderName || "Admin"}
+                {outgoing ? "You" : BRAND}
               </span>
               <span className="u-msg-bubble">{msg.body}</span>
               <span className="u-msg-time">
