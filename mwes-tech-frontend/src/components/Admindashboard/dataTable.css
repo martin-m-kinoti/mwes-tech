@@ -130,8 +130,6 @@
   font-size: 14px;
 }
 
-/* Mobile: tighter cells, finger-sized controls, and a 16px select so iOS
-   Safari does not auto-zoom on focus. */
 @media (max-width: 640px) {
   .dt-th {
     padding: 10px 12px;

@@ -128,8 +128,6 @@
   cursor: not-allowed;
 }
 
-/* Mobile: compact the form, stretch inputs/submit to full width and keep
-   16px type so iOS Safari does not auto-zoom on focus. */
 @media (max-width: 640px) {
   .order-title {
     font-size: 19px;

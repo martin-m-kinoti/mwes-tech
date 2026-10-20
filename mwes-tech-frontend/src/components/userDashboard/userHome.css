@@ -125,8 +125,6 @@
   }
 }
 
-/* Mobile: shrink the oversized action cards and give the buttons the full
-   row so they are easy to hit. */
 @media (max-width: 640px) {
   .u-card {
     padding: 26px 18px;

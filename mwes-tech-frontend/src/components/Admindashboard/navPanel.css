@@ -143,8 +143,6 @@
   color: #ffd9d9;
 }
 
-/* Mobile: the sidebar becomes an off-canvas menu drawer opened from the
-   topbar hamburger. Full labels return, and items grow to touch-target size. */
 @media (max-width: 860px) {
   .sidebar {
     position: fixed;

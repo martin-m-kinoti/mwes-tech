@@ -28,6 +28,9 @@
 
 .u-search {
   flex: 1;
+  /* Let the search shrink below the input's intrinsic width on narrow
+     screens, so the avatar and bell stay on-screen. */
+  min-width: 0;
   max-width: 460px;
   display: flex;
   align-items: center;
@@ -118,7 +121,6 @@
     display: inline-flex;
   }
 
-  /* 16px stops iOS Safari from auto-zooming on focus. */
   .u-search input {
     font-size: 16px;
   }
