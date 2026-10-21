@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import "./payments.css";
 import { useAuth } from "../../AuthContext";
 import { auth } from "../../firebase";
+import { track } from "../../analytics";
 
 const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5000";
 
@@ -147,6 +148,19 @@ export default function Payments() {
             mpesaReceipt: data.mpesaReceipt,
             amountPaid: data.amountPaid,
           });
+          if (data.status === "SUCCESS") {
+            track("service_secured", {
+              service_id: form.serviceId,
+              order_id: form.serviceId,
+              mpesa_receipt: data.mpesaReceipt || null,
+            });
+          } else {
+            track("payment_failed", {
+              service_id: form.serviceId,
+              order_id: form.serviceId,
+              reason: data.status || "unknown",
+            });
+          }
         } else if (tries >= maxTries) {
           clearInterval(pollRef.current);
           setPhase(null);
@@ -195,10 +209,20 @@ export default function Payments() {
       } else {
         setErrors({ submit: data.error || "Failed to initiate payment" });
         setPhase(null);
+        track("payment_failed", {
+          service_id: form.serviceId,
+          order_id: form.serviceId,
+          reason: data.error || "initiate_failed",
+        });
       }
     } catch (err) {
       setErrors({ submit: "Network error. Try again." });
       setPhase(null);
+      track("payment_failed", {
+        service_id: form.serviceId,
+        order_id: form.serviceId,
+        reason: "network_error",
+      });
     }
   };
 

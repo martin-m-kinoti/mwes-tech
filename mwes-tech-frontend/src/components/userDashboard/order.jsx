@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../../api";
+import { track } from "../../analytics";
 import "./order.css";
 
 const SERVICE_OPTIONS = [
@@ -39,6 +40,10 @@ function Order() {
         comments,
       });
       const placed = data.order;
+      track("service_requested", {
+        service_id: placed?.service || service,
+        order_id: placed?.id ?? placed?._id ?? null,
+      });
       setSuccess(
         `Order placed successfully. Estimated delivery: ${new Date(
           placed.deliveryDate

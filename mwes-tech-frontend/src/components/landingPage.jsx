@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { BRAND } from "../config";
 import { useAuth } from "../AuthContext";
+import { track } from "../analytics";
 import "./landingPage.css";
 
 const NAV_LINKS = [
@@ -65,6 +66,12 @@ const SERVICES = [
 ];
 
 function ServiceBlock({ service }) {
+  useEffect(() => {
+    // service.title matches the "service" value stored on orders, so
+    // viewed -> requested -> secured events can be joined per service.
+    track("service_viewed", { service_id: service.title });
+  }, [service.title]);
+
   return (
     <div className="lp-service">
       <h3 className="lp-service-title">{service.title}</h3>
